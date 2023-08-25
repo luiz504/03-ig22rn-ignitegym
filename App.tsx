@@ -12,9 +12,16 @@ export default function App() {
 
   return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar style="light" backgroundColor="transparent" translucent />
 
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#202024',
+        }}
+      >
         <Text
           style={{ color: 'red', fontSize: 50, fontFamily: 'Roboto-Regular' }}
         >
