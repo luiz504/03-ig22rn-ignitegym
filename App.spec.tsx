@@ -2,7 +2,7 @@ import { render, screen } from '~/utils/test-utils'
 import App from './App'
 import { StatusBar } from 'expo-status-bar'
 
-describe('Hello', () => {
+describe('App init file', () => {
   it('should render correctly', () => {
     render(<App />)
 
