@@ -1,6 +1,8 @@
 import { useFonts } from 'expo-font'
 import { StatusBar } from 'expo-status-bar'
-import { Text, View } from 'react-native'
+import { Box, NativeBaseProvider, Text } from 'native-base'
+import { Loading } from '~/components/Loading'
+import { THEME } from '~/theme'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -8,26 +10,17 @@ export default function App() {
     'Roboto-Bold': require('./src/assets/fonts/Roboto-Bold.ttf'),
   })
 
-  if (!fontsLoaded) return null
-
   return (
-    <>
+    <NativeBaseProvider theme={THEME}>
       <StatusBar style="light" backgroundColor="transparent" translucent />
 
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#202024',
-        }}
-      >
-        <Text
-          style={{ color: 'red', fontSize: 50, fontFamily: 'Roboto-Regular' }}
-        >
-          Hello 2 word
-        </Text>
-      </View>
-    </>
+      <Box bg={'gray.800'} safeArea flex={1}>
+        {fontsLoaded ? (
+          <Text style={{ color: 'white' }}> Hello</Text>
+        ) : (
+          <Loading />
+        )}
+      </Box>
+    </NativeBaseProvider>
   )
 }

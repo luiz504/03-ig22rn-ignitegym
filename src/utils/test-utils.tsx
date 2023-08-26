@@ -1,9 +1,10 @@
 import { render } from '@testing-library/react-native'
+import { NativeBaseProvider } from 'native-base'
 import { FC, ReactNode } from 'react'
-import { ThemeProvider } from 'styled-components'
+import { THEME } from '~/theme'
 
 const AllTheProviders: FC<{ children: ReactNode }> = ({ children }) => {
-  return <ThemeProvider theme={{}}>{children}</ThemeProvider>
+  return <NativeBaseProvider theme={THEME}>{children}</NativeBaseProvider>
 }
 
 const customRender: typeof render = (ui, options) =>
