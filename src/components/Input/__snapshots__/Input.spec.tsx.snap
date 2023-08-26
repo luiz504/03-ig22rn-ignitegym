@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Input Component should render Correctly: initial-input-non-focused 1`] = `
+{
+  "backgroundColor": "transparent",
+  "color": "#FFFFFF",
+  "flex": 1,
+  "fontFamily": "Roboto-Regular",
+  "fontSize": 16,
+  "fontStyle": "normal",
+  "fontWeight": "400",
+  "height": "100%",
+  "paddingBottom": 8,
+  "paddingLeft": 16,
+  "paddingRight": 16,
+  "paddingTop": 8,
+  "width": "100%",
+}
+`;

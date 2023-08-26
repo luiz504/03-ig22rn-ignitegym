@@ -1,7 +1,8 @@
 import { useFonts } from 'expo-font'
 import { StatusBar } from 'expo-status-bar'
-import { Box, NativeBaseProvider, Text } from 'native-base'
+import { Box, NativeBaseProvider } from 'native-base'
 import { Loading } from '~/components/Loading'
+import { SignIn } from '~/screens/SignIn'
 import { THEME } from '~/theme'
 
 export default function App() {
@@ -14,12 +15,8 @@ export default function App() {
     <NativeBaseProvider theme={THEME}>
       <StatusBar style="light" backgroundColor="transparent" translucent />
 
-      <Box bg={'gray.800'} safeArea flex={1}>
-        {fontsLoaded ? (
-          <Text style={{ color: 'white' }}> Hello</Text>
-        ) : (
-          <Loading />
-        )}
+      <Box bg={'gray.800'} flex={1}>
+        {fontsLoaded ? <SignIn /> : <Loading />}
       </Box>
     </NativeBaseProvider>
   )
