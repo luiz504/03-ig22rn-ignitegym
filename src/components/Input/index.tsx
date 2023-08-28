@@ -20,6 +20,7 @@ export const Input: FC<IInputProps> = (props) => {
         borderColor: 'green.500',
         cursorColor: theme.colors.gray[100],
       }}
+      _disabled={{ opacity: 0.5 }}
       {...props}
     />
   )
