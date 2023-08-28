@@ -1,10 +1,15 @@
+import { NavigationContainer } from '@react-navigation/native'
 import { render } from '@testing-library/react-native'
 import { NativeBaseProvider } from 'native-base'
 import { FC, ReactNode } from 'react'
 import { THEME } from '~/theme'
 
 const AllTheProviders: FC<{ children: ReactNode }> = ({ children }) => {
-  return <NativeBaseProvider theme={THEME}>{children}</NativeBaseProvider>
+  return (
+    <NativeBaseProvider theme={THEME}>
+      <NavigationContainer>{children}</NavigationContainer>
+    </NativeBaseProvider>
+  )
 }
 
 const customRender: typeof render = (ui, options) =>

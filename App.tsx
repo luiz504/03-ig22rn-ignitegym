@@ -1,9 +1,13 @@
+import 'react-native-gesture-handler'
 import { useFonts } from 'expo-font'
 import { StatusBar } from 'expo-status-bar'
 import { Box, NativeBaseProvider } from 'native-base'
-import { Loading } from '~/components/Loading'
-import { SignIn } from '~/screens/SignIn'
+
 import { THEME } from '~/theme'
+
+import { Loading } from '~/components/Loading'
+
+import { Routes } from '~/routes'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -16,7 +20,9 @@ export default function App() {
       <StatusBar style="light" backgroundColor="transparent" translucent />
 
       <Box bg={'gray.800'} flex={1}>
-        {fontsLoaded ? <SignIn /> : <Loading />}
+        {!fontsLoaded && <Loading />}
+
+        {fontsLoaded && <Routes />}
       </Box>
     </NativeBaseProvider>
   )

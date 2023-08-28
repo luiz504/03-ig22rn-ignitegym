@@ -8,18 +8,17 @@ import BGImg from '~/assets/images/background.png'
 
 import { Button } from '~/components/Button'
 import { Input } from '~/components/Input'
-import { AuthNavigatorRouteProps } from '~/routes/auth.routes'
 
-export const SignIn: FC = () => {
-  const { navigate } = useNavigation<AuthNavigatorRouteProps>()
-
-  const handleClickSignIn = () => {
-    Keyboard.dismiss()
-  }
+export const SignUp: FC = () => {
+  const navigator = useNavigation()
 
   const handleClickSignUp = () => {
     Keyboard.dismiss()
-    navigate('signUp')
+  }
+
+  const handleClickGoBack = () => {
+    Keyboard.dismiss()
+    navigator.goBack()
   }
 
   return (
@@ -49,7 +48,7 @@ export const SignIn: FC = () => {
           </Center>
 
           <VStack flex={1}>
-            <Center mt={24} mb={24}>
+            <Center mb={24}>
               <Heading
                 color="gray.100"
                 fontSize={'xl'}
@@ -57,8 +56,10 @@ export const SignIn: FC = () => {
                 lineHeight={32}
                 mb={'18px'}
               >
-                Sign in with your account
+                Create your account.
               </Heading>
+
+              <Input mb={4} placeholder="Name" />
 
               <Input
                 mb={4}
@@ -69,23 +70,21 @@ export const SignIn: FC = () => {
 
               <Input mb={4} placeholder="Password" secureTextEntry />
 
+              <Input mb={4} placeholder="Confirm password" secureTextEntry />
+
               <Button
-                label={'Sign in'}
-                onPress={handleClickSignIn}
-                testID="btn-sign-in"
+                label={'Sign up'}
+                onPress={handleClickSignUp}
+                testID="btn-sign-up"
               />
             </Center>
 
             <Center mt="auto">
-              <Text color="gray.100" fontSize="md" lineHeight={25.6} mb={3}>
-                Don&apos;t have access yet?
-              </Text>
-
               <Button
-                label={'Create Account'}
+                label={'Go back to Sign in'}
                 variant={'outline'}
-                onPress={handleClickSignUp}
-                testID="btn-sign-up"
+                onPress={handleClickGoBack}
+                testID="btn-go-back-sign-in"
               />
             </Center>
           </VStack>

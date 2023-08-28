@@ -6,7 +6,6 @@ export const Input: FC<IInputProps> = (props) => {
 
   return (
     <NBInput
-      {...props}
       bg="gray.700"
       h={14}
       px={4}
@@ -21,6 +20,7 @@ export const Input: FC<IInputProps> = (props) => {
         borderColor: 'green.500',
         cursorColor: theme.colors.gray[100],
       }}
+      {...props}
     />
   )
 }
