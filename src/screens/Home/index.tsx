@@ -1,9 +1,12 @@
 import { FC, useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
 import { FlatList, HStack, Heading, Text, VStack } from 'native-base'
 
 import { Header } from './components/Header'
 import { Group } from './components/Group'
 import { ExerciseCard } from './components/ExerciseCard'
+
+import { AppNavigatorRouteProps } from '~/routes/app.routes'
 
 export const Home: FC = () => {
   const [groups] = useState([
@@ -31,6 +34,10 @@ export const Home: FC = () => {
     'High Row',
     'High Row',
   ])
+  const navigation = useNavigation<AppNavigatorRouteProps>()
+  const handleOpenExerciseDetails = () => {
+    navigation.navigate('exercise')
+  }
 
   return (
     <VStack flex={1}>
@@ -69,7 +76,9 @@ export const Home: FC = () => {
         <FlatList
           data={exercises}
           keyExtractor={(_, i) => String(i)}
-          renderItem={({ item }) => <ExerciseCard exercise={item} />}
+          renderItem={({ item }) => (
+            <ExerciseCard exercise={item} onPress={handleOpenExerciseDetails} />
+          )}
           contentContainerStyle={{ gap: 12, paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
         />

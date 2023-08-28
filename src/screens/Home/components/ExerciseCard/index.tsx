@@ -8,11 +8,11 @@ interface ExerciseCardProps extends TouchableOpacityProps {
   exercise?: string
 }
 
-export const ExerciseCard: FC<ExerciseCardProps> = () => {
+export const ExerciseCard: FC<ExerciseCardProps> = ({ ...rest }) => {
   const theme = useTheme()
 
   return (
-    <TouchableOpacity>
+    <TouchableOpacity {...rest}>
       <HStack bg="gray.500" alignItems={'center'} rounded="md" p={2} pr={4}>
         <Image
           source={{
@@ -22,7 +22,7 @@ export const ExerciseCard: FC<ExerciseCardProps> = () => {
           w={16}
           h={16}
           rounded="md"
-          resizeMode="center"
+          resizeMode="cover"
         />
 
         <VStack flex={1} ml={4}>

@@ -13,12 +13,13 @@ export const HistoryCard: FC<IHStackProps> = ({ ...rest }) => {
       justifyContent={'space-between'}
       {...rest}
     >
-      <VStack mr={5}>
+      <VStack mr={5} flex={1}>
         <Heading
           color="white"
           fontSize={'md'}
           lineHeight={'md-160'}
           textTransform={'capitalize'}
+          numberOfLines={2}
         >
           Back
         </Heading>
@@ -26,7 +27,7 @@ export const HistoryCard: FC<IHStackProps> = ({ ...rest }) => {
           color="gray.100"
           fontSize="lg"
           lineHeight={'lg-160'}
-          numberOfLines={1}
+          numberOfLines={2}
         >
           High Stack
         </Text>
