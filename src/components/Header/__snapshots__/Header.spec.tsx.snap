@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header Component should render correctly: title-element 1`] = `
+{
+  "backgroundColor": undefined,
+  "color": "#E1E1E6",
+  "fontFamily": "Roboto-Regular",
+  "fontSize": 20,
+  "fontStyle": "normal",
+  "fontWeight": "700",
+  "letterSpacing": 0,
+  "lineHeight": 32,
+  "textDecorationLine": undefined,
+}
+`;

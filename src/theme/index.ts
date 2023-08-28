@@ -39,5 +39,6 @@ export const THEME = extendTheme({
     'sm-160': 22.4,
     'md-160': 25.6,
     'lg-160': 28.8,
+    'xl-160': 32,
   },
 })
