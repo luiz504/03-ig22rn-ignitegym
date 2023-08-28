@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Group Component should render correctly isActive=true: btn-active:style 1`] = `
+{
+  "alignItems": "center",
+  "alignSelf": "flex-start",
+  "backgroundColor": "#202024",
+  "borderColor": "#00B37E",
+  "borderRadius": 6,
+  "borderWidth": 1.5,
+  "justifyContent": "center",
+  "minWidth": 96,
+  "paddingBottom": 12,
+  "paddingLeft": 12,
+  "paddingRight": 12,
+  "paddingTop": 12,
+}
+`;
+
+exports[`Group Component should render correctly isActive=true: btn-active-text:style 1`] = `
+{
+  "backgroundColor": undefined,
+  "color": "#00B37E",
+  "fontFamily": "Roboto-Regular",
+  "fontSize": 12,
+  "fontStyle": "normal",
+  "fontWeight": "700",
+  "letterSpacing": 0,
+  "lineHeight": 18,
+  "textDecorationLine": undefined,
+  "textTransform": "uppercase",
+}
+`;
+
+exports[`Group Component should render correctly isActive=true: btn-not-active:style 1`] = `
+{
+  "alignItems": "center",
+  "alignSelf": "flex-start",
+  "backgroundColor": "#202024",
+  "borderColor": "#202024",
+  "borderRadius": 6,
+  "borderWidth": 1.5,
+  "justifyContent": "center",
+  "minWidth": 96,
+  "paddingBottom": 12,
+  "paddingLeft": 12,
+  "paddingRight": 12,
+  "paddingTop": 12,
+}
+`;
+
+exports[`Group Component should render correctly isActive=true: btn-not-active-text:style 1`] = `
+{
+  "backgroundColor": undefined,
+  "color": "#C4C4CC",
+  "fontFamily": "Roboto-Regular",
+  "fontSize": 12,
+  "fontStyle": "normal",
+  "fontWeight": "700",
+  "letterSpacing": 0,
+  "lineHeight": 18,
+  "textDecorationLine": undefined,
+  "textTransform": "uppercase",
+}
+`;
