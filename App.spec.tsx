@@ -1,4 +1,5 @@
 import {
+  cleanup,
   render,
   screen,
   waitFor,
@@ -25,6 +26,7 @@ describe('App init file', () => {
     await waitForElementToBeRemoved(() =>
       screen.queryByTestId(loadingSpinnerID),
     )
+    cleanup()
   })
 
   it('should render the Statusbar correctly', async () => {
@@ -39,5 +41,6 @@ describe('App init file', () => {
         translucent: true,
       }),
     )
+    cleanup()
   })
 })
