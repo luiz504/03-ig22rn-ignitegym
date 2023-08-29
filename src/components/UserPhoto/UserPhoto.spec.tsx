@@ -1,8 +1,13 @@
-import { render } from '~/utils/test-utils'
+import { render, screen } from '~/utils/test-utils'
 import { UserPhoto } from '.'
 
 describe('UserPhoto Component', () => {
   it('should render correctly', () => {
-    render(<UserPhoto size={64} alt={'user photo'} />)
+    const size = 66
+    render(<UserPhoto size={size} alt={'user photo'} testID="user-photo" />)
+
+    const imgUserPhoto = screen.getByTestId('user-photo')
+
+    expect(imgUserPhoto).toHaveStyle({ width: size, height: size })
   })
 })

@@ -5,7 +5,7 @@ export interface UserPhotoProps extends IImageProps {
   size: number
 }
 
-export const UserPhoto: FC<UserPhotoProps> = ({ size = 64, alt, ...rest }) => {
+export const UserPhoto: FC<UserPhotoProps> = ({ size, alt, ...rest }) => {
   return (
     <Image
       alt={alt}
