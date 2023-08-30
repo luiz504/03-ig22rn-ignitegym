@@ -46,6 +46,7 @@ export const SignUp: FC = () => {
   const {
     control,
     handleSubmit,
+    setFocus,
     formState: { errors },
   } = useForm<FormSignUpType>({
     resolver: zodResolver(formSignUpSchema),
@@ -87,7 +88,7 @@ export const SignUp: FC = () => {
           </Center>
 
           <VStack flex={1}>
-            <Center mb={24}>
+            <Center mb={8}>
               <Heading
                 color="gray.100"
                 fontSize="xl"
@@ -101,13 +102,16 @@ export const SignUp: FC = () => {
               <Controller
                 control={control}
                 name="name"
-                render={({ field: { onChange, value } }) => (
+                render={({ field: { onChange, ref, value } }) => (
                   <Input
+                    ref={ref}
                     placeholder="Name"
                     value={value}
                     onChangeText={onChange}
+                    onSubmitEditing={() => setFocus('email')}
                     errorMsg={errors.name?.message}
                     _container={{ mb: 4 }}
+                    testID="input-name"
                   />
                 )}
               />
@@ -115,15 +119,18 @@ export const SignUp: FC = () => {
               <Controller
                 control={control}
                 name="email"
-                render={({ field: { onChange, value } }) => (
+                render={({ field: { onChange, ref, value } }) => (
                   <Input
+                    ref={ref}
                     keyboardType="email-address"
                     placeholder="E-mail"
                     autoCapitalize="none"
                     value={value}
                     onChangeText={onChange}
+                    onSubmitEditing={() => setFocus('password')}
                     errorMsg={errors.email?.message}
                     _container={{ mb: 4 }}
+                    testID="input-email"
                   />
                 )}
               />
@@ -131,14 +138,17 @@ export const SignUp: FC = () => {
               <Controller
                 control={control}
                 name="password"
-                render={({ field: { onChange, value } }) => (
+                render={({ field: { onChange, ref, value } }) => (
                   <Input
+                    ref={ref}
                     placeholder="Password"
                     secureTextEntry
                     value={value}
                     onChangeText={onChange}
+                    onSubmitEditing={() => setFocus('confirmPassword')}
                     errorMsg={errors.password?.message}
                     _container={{ mb: 4 }}
+                    testID="input-password"
                   />
                 )}
               />
@@ -146,8 +156,9 @@ export const SignUp: FC = () => {
               <Controller
                 control={control}
                 name="confirmPassword"
-                render={({ field: { onChange, value } }) => (
+                render={({ field: { onChange, ref, value } }) => (
                   <Input
+                    ref={ref}
                     placeholder="Confirm password"
                     secureTextEntry
                     onChangeText={onChange}
@@ -156,6 +167,7 @@ export const SignUp: FC = () => {
                     onSubmitEditing={handleSubmit(handleClickSignUp)}
                     errorMsg={errors.confirmPassword?.message}
                     _container={{ mb: 4 }}
+                    testID="input-confirm-pw"
                   />
                 )}
               />
@@ -163,7 +175,7 @@ export const SignUp: FC = () => {
               <Button
                 label={'Sign up'}
                 onPress={handleSubmit(handleClickSignUp)}
-                testID="btn-sign-up"
+                testID="btn-submit"
               />
             </Center>
 

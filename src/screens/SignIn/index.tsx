@@ -26,9 +26,11 @@ const formSignInSchema = z.object({
 type FormSignInType = z.infer<typeof formSignInSchema>
 export const SignIn: FC = () => {
   const { navigate } = useNavigation<AuthNavigatorRouteProps>()
+
   const {
     control,
     handleSubmit,
+    setFocus,
     formState: { errors },
   } = useForm<FormSignInType>({
     resolver: zodResolver(formSignInSchema),
@@ -84,14 +86,17 @@ export const SignIn: FC = () => {
               <Controller
                 control={control}
                 name="email"
-                render={({ field: { onChange } }) => (
+                render={({ field: { onChange, ref } }) => (
                   <Input
+                    ref={ref}
                     keyboardType="email-address"
                     placeholder="E-mail"
                     autoCapitalize="none"
-                    onChangeText={(value) => onChange(value)}
+                    onChangeText={onChange}
+                    onSubmitEditing={() => setFocus('password')}
                     errorMsg={errors.email?.message}
                     _container={{ mb: 4 }}
+                    testID="input-email"
                   />
                 )}
               />
@@ -99,15 +104,17 @@ export const SignIn: FC = () => {
               <Controller
                 control={control}
                 name="password"
-                render={({ field: { onChange } }) => (
+                render={({ field: { onChange, ref } }) => (
                   <Input
+                    ref={ref}
                     placeholder="Password"
                     secureTextEntry
-                    onChangeText={(value) => onChange(value)}
+                    onChangeText={onChange}
                     returnKeyType="send"
                     onSubmitEditing={handleSubmit(handleClickSignIn)}
                     errorMsg={errors.password?.message}
                     _container={{ mb: 4 }}
+                    testID="input-password"
                   />
                 )}
               />
@@ -115,7 +122,7 @@ export const SignIn: FC = () => {
               <Button
                 label={'Sign in'}
                 onPress={handleSubmit(handleClickSignIn)}
-                testID="btn-sign-in"
+                testID="btn-submit"
               />
             </Center>
 
