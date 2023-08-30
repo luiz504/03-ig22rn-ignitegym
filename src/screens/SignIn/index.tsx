@@ -2,16 +2,39 @@ import { FC } from 'react'
 import { Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { Center, Heading, Image, Text, VStack } from 'native-base'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 
 import LogoSvg from '~/assets/icons/logo.svg'
 import BGImg from '~/assets/images/background.png'
 
+import { formErrorMessages } from '~/constants/formErrors'
+
 import { Button } from '~/components/Button'
 import { Input } from '~/components/Input'
+
 import { AuthNavigatorRouteProps } from '~/routes/auth.routes'
 
+const formSignInSchema = z.object({
+  email: z
+    .string({ required_error: formErrorMessages.emailRequired })
+    .email(formErrorMessages.invalidEmail),
+  password: z.string({ required_error: formErrorMessages.passwordRequired }),
+})
+
+type FormSignInType = z.infer<typeof formSignInSchema>
 export const SignIn: FC = () => {
   const { navigate } = useNavigation<AuthNavigatorRouteProps>()
+
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    formState: { errors },
+  } = useForm<FormSignInType>({
+    resolver: zodResolver(formSignInSchema),
+  })
 
   const handleClickSignIn = () => {
     Keyboard.dismiss()
@@ -43,7 +66,7 @@ export const SignIn: FC = () => {
           <Center my={24}>
             <LogoSvg />
 
-            <Text color="gray.100" fontSize={'sm'} lineHeight={22.4}>
+            <Text color="gray.100" fontSize="sm" lineHeight="sm-160">
               Train your mind and your body.
             </Text>
           </Center>
@@ -52,27 +75,54 @@ export const SignIn: FC = () => {
             <Center mt={24} mb={24}>
               <Heading
                 color="gray.100"
-                fontSize={'xl'}
-                fontFamily={'heading'}
-                lineHeight={32}
-                mb={'18px'}
+                fontSize="xl"
+                lineHeight="xl-160"
+                fontFamily="heading"
+                mb="18px"
               >
                 Sign in with your account
               </Heading>
 
-              <Input
-                mb={4}
-                keyboardType="email-address"
-                placeholder="E-mail"
-                autoCapitalize="none"
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, ref } }) => (
+                  <Input
+                    ref={ref}
+                    keyboardType="email-address"
+                    placeholder="E-mail"
+                    autoCapitalize="none"
+                    onChangeText={onChange}
+                    onSubmitEditing={() => setFocus('password')}
+                    errorMsg={errors.email?.message}
+                    _container={{ mb: 4 }}
+                    testID="input-email"
+                  />
+                )}
               />
 
-              <Input mb={4} placeholder="Password" secureTextEntry />
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, ref } }) => (
+                  <Input
+                    ref={ref}
+                    placeholder="Password"
+                    secureTextEntry
+                    onChangeText={onChange}
+                    returnKeyType="send"
+                    onSubmitEditing={handleSubmit(handleClickSignIn)}
+                    errorMsg={errors.password?.message}
+                    _container={{ mb: 4 }}
+                    testID="input-password"
+                  />
+                )}
+              />
 
               <Button
                 label={'Sign in'}
-                onPress={handleClickSignIn}
-                testID="btn-sign-in"
+                onPress={handleSubmit(handleClickSignIn)}
+                testID="btn-submit"
               />
             </Center>
 
