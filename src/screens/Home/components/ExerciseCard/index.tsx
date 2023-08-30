@@ -26,7 +26,12 @@ export const ExerciseCard: FC<ExerciseCardProps> = ({ ...rest }) => {
         />
 
         <VStack flex={1} ml={4}>
-          <Heading color="white" fontSize="lg" lineHeight="lg-160">
+          <Heading
+            color="white"
+            fontSize="lg"
+            lineHeight="lg-160"
+            fontFamily="heading"
+          >
             High row
           </Heading>
           <Text

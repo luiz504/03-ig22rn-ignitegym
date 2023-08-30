@@ -18,11 +18,16 @@ export const Header: FC = () => {
       />
 
       <VStack flex={1}>
-        <Text color="gray.100" fontSize={'md'}>
+        <Text color="gray.100" fontSize="md" lineHeight="md-160">
           Header
         </Text>
 
-        <Heading color="gray.100" fontSize={'md'}>
+        <Heading
+          color="gray.100"
+          fontSize="md"
+          lineHeight="md-160"
+          fontFamily="heading"
+        >
           Luiz Bueno
         </Heading>
       </VStack>

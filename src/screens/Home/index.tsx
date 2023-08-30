@@ -64,7 +64,12 @@ export const Home: FC = () => {
       />
       <VStack flex={1} px={8}>
         <HStack justifyContent="space-between" mb={3}>
-          <Heading color="gray.100" fontSize="md" lineHeight="md-160">
+          <Heading
+            color="gray.100"
+            fontSize="md"
+            lineHeight="md-160"
+            fontFamily="heading"
+          >
             Exercises
           </Heading>
 

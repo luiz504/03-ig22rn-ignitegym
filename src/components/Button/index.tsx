@@ -17,7 +17,7 @@ export const Button: FC<ButtonProps> = ({
     <NBButton
       w="full"
       h={14}
-      rounded={'sm'}
+      rounded="sm"
       bg={isOutline ? 'transparent' : 'green.700'}
       borderWidth={1.5}
       borderColor={isOutline ? 'green.500' : 'green.700'}
@@ -27,8 +27,8 @@ export const Button: FC<ButtonProps> = ({
     >
       <Text
         color={isOutline ? 'green.500' : 'white'}
-        fontFamily={'heading'}
-        fontSize={'md'}
+        fontFamily="heading"
+        fontSize="md"
       >
         {label}
       </Text>

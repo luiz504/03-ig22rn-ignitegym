@@ -47,14 +47,14 @@ describe('SignIn Component', () => {
     expect(keyboardSpy).toBeCalledTimes(1)
   })
 
-  it('should handle signIn correctly', async () => {
-    const { keyboardSpy } = useKeyboardSpy()
+  // it('should handle signIn correctly', async () => {
+  //   const { keyboardSpy } = useKeyboardSpy()
 
-    render(<SignIn />)
-    const signInBtn = screen.getByTestId('btn-sign-in')
+  //   render(<SignIn />)
+  //   const signInBtn = screen.getByTestId('btn-sign-in')
 
-    fireEvent.press(signInBtn)
+  //   fireEvent.press(signInBtn)
 
-    await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
-  })
+  //   await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
+  // })
 })

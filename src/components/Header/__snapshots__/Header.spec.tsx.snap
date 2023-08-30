@@ -4,7 +4,7 @@ exports[`Header Component should render correctly: title-element 1`] = `
 {
   "backgroundColor": undefined,
   "color": "#E1E1E6",
-  "fontFamily": "Roboto-Regular",
+  "fontFamily": "Roboto-Bold",
   "fontSize": 20,
   "fontStyle": "normal",
   "fontWeight": "700",

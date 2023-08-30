@@ -79,7 +79,7 @@ export const Profile: FC = () => {
           <TouchableOpacity>
             <Text
               color="green.500"
-              fontWeight="bold"
+              fontFamily="heading"
               mt={3}
               onPress={handleUserPhotoSelect}
               disabled={isLoadingPhoto}
@@ -96,6 +96,7 @@ export const Profile: FC = () => {
             color="gray.200"
             fontSize="md"
             lineHeight="md-160"
+            fontFamily="heading"
             mt={12}
             alignSelf={'flex-start'}
           >

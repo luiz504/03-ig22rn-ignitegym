@@ -26,7 +26,7 @@ export const Group: FC<GroupProps> = ({ label, isActive = false, ...rest }) => {
         color={isActive ? 'green.500' : 'gray.200'}
         textTransform="uppercase"
         fontSize="xs"
-        fontWeight="bold"
+        fontFamily="heading"
       >
         {label}
       </Text>

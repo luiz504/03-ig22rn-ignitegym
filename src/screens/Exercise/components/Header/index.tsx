@@ -26,6 +26,7 @@ export const Header: FC = () => {
           color="gray.100"
           fontSize="lg"
           lineHeight="lg-160"
+          fontFamily="heading"
           flexShrink={1}
         >
           Front Row

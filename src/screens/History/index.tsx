@@ -30,6 +30,7 @@ export const History: FC = () => {
             color="gray.200"
             fontSize="md"
             lineHeight="md-160"
+            fontFamily="heading"
           >
             {section.title}
           </Heading>
