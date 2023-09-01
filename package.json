@@ -6,7 +6,7 @@
   "scripts": {
     "start:mobile": "cd apps/mobile && npm run start",
     "start:server": "turbo dev --filter=./apps/backend",
-    "test": "turbo test",
+    "test": "cd apps/mobile && npm run test",
     "prepare": "husky install"
   },
   "devDependencies": {

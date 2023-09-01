@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { Center, Heading, Image, Text, VStack } from 'native-base'
+import { Center, Heading, Image, Text, VStack, useToast } from 'native-base'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -13,6 +13,9 @@ import { formErrorMessages } from '~/constants/formErrors'
 
 import { Button } from '~/components/Button'
 import { Input } from '~/components/Input'
+import { api } from '~/libs/axios'
+
+import { AppError } from '~/utils/AppError'
 
 const formSignUpSchema = z
   .object({
@@ -42,18 +45,44 @@ const formSignUpSchema = z
 type FormSignUpType = z.infer<typeof formSignUpSchema>
 export const SignUp: FC = () => {
   const navigator = useNavigation()
+  const toast = useToast()
 
   const {
     control,
     handleSubmit,
     setFocus,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormSignUpType>({
     resolver: zodResolver(formSignUpSchema),
+    defaultValues: {
+      name: 'Luiz Renato',
+      email: 'luiz@email.com',
+      password: '123456',
+      confirmPassword: '123456',
+    },
   })
 
-  const handleClickSignUp = () => {
-    Keyboard.dismiss()
+  const handleClickSignUp = async (params: FormSignUpType) => {
+    const { name, email, password } = params
+
+    try {
+      await api.post('/users', {
+        name,
+        email,
+        password,
+      })
+    } catch (err) {
+      const isAppError = err instanceof AppError
+      const title = isAppError
+        ? err.message
+        : 'Fail to create account, try again later.'
+
+      toast.show({
+        placement: 'top',
+        bgColor: 'red.500',
+        title,
+      })
+    }
   }
 
   const handleClickGoBack = () => {
@@ -176,6 +205,7 @@ export const SignUp: FC = () => {
                 label={'Sign up'}
                 onPress={handleSubmit(handleClickSignUp)}
                 testID="btn-submit"
+                disabled={isSubmitting}
               />
             </Center>
 
