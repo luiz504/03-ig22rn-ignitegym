@@ -1,2 +1,3 @@
-*.config.js
-*.d.ts
+**.config.js
+**.d.ts
+**/apps/backend/**
