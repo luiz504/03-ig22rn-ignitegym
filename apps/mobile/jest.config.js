@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('jest').Config} */
+const config = {
   preset: 'jest-expo',
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
@@ -12,6 +13,7 @@ module.exports = {
     '!**/jest.setup.js',
     '!**/*.d.ts',
   ],
+ 
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/src/$1', 
     "^__mocks__/(.*)$": "<rootDir>/__mocks__/$1",
@@ -19,3 +21,4 @@ module.exports = {
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 }
+module.exports = config

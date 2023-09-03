@@ -40,7 +40,7 @@ export const Home: FC = () => {
   }
 
   return (
-    <VStack flex={1}>
+    <VStack flex={1} testID="home-container">
       <Header />
 
       <FlatList

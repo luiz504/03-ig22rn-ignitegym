@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { Center, Heading, Image, Text, VStack } from 'native-base'
+import { Center, Heading, Image, Text, VStack, useToast } from 'native-base'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -15,6 +15,8 @@ import { Button } from '~/components/Button'
 import { Input } from '~/components/Input'
 
 import { AuthNavigatorRouteProps } from '~/routes/auth.routes'
+import { useAuth } from '~/hooks/useAuth'
+import { AppError } from '~/utils/AppError'
 
 const formSignInSchema = z.object({
   email: z
@@ -26,18 +28,31 @@ const formSignInSchema = z.object({
 type FormSignInType = z.infer<typeof formSignInSchema>
 export const SignIn: FC = () => {
   const { navigate } = useNavigation<AuthNavigatorRouteProps>()
+  const { signIn } = useAuth()
+  const toast = useToast()
 
   const {
     control,
     handleSubmit,
     setFocus,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormSignInType>({
     resolver: zodResolver(formSignInSchema),
+    defaultValues: {
+      email: 'luiz@email.com',
+      password: '123456',
+    },
   })
 
-  const handleClickSignIn = () => {
-    Keyboard.dismiss()
+  const handleClickSignIn = async ({ email, password }: FormSignInType) => {
+    try {
+      await signIn({ email, password })
+    } catch (err) {
+      const isAppError = err instanceof AppError
+      const title = isAppError ? err.message : 'Fail to login, try again later.'
+
+      toast.show({ placement: 'top', bgColor: 'red.500', title })
+    }
   }
 
   const handleClickSignUp = () => {
@@ -49,6 +64,7 @@ export const SignIn: FC = () => {
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
+      testID="signIn-container"
     >
       <TouchableWithoutFeedback
         onPress={() => Keyboard.dismiss()}
@@ -86,14 +102,16 @@ export const SignIn: FC = () => {
               <Controller
                 control={control}
                 name="email"
-                render={({ field: { onChange, ref } }) => (
+                render={({ field: { onChange, ref, value } }) => (
                   <Input
                     ref={ref}
                     keyboardType="email-address"
                     placeholder="E-mail"
                     autoCapitalize="none"
+                    value={value}
                     onChangeText={onChange}
                     onSubmitEditing={() => setFocus('password')}
+                    isDisabled={isSubmitting}
                     errorMsg={errors.email?.message}
                     _container={{ mb: 4 }}
                     testID="input-email"
@@ -104,14 +122,16 @@ export const SignIn: FC = () => {
               <Controller
                 control={control}
                 name="password"
-                render={({ field: { onChange, ref } }) => (
+                render={({ field: { onChange, ref, value } }) => (
                   <Input
                     ref={ref}
                     placeholder="Password"
                     secureTextEntry
+                    value={value}
                     onChangeText={onChange}
                     returnKeyType="send"
                     onSubmitEditing={handleSubmit(handleClickSignIn)}
+                    isDisabled={isSubmitting}
                     errorMsg={errors.password?.message}
                     _container={{ mb: 4 }}
                     testID="input-password"
@@ -122,6 +142,7 @@ export const SignIn: FC = () => {
               <Button
                 label={'Sign in'}
                 onPress={handleSubmit(handleClickSignIn)}
+                isLoading={isSubmitting}
                 testID="btn-submit"
               />
             </Center>
