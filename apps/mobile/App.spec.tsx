@@ -1,46 +1,34 @@
-import {
-  cleanup,
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react-native'
+import { render, screen, waitFor } from '@testing-library/react-native'
 import App from './App'
-
+import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 
 jest.mock('expo-font', () => ({
   ...jest.requireActual('expo-font'),
 }))
+jest.mock('expo-splash-screen')
 describe('App init file', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  const loadingSpinnerID = 'loading-spinner'
-
   it('should loadFonts correctly', async () => {
-    render(<App />)
-    expect(screen.getByTestId(loadingSpinnerID)).toBeVisible()
+    const hideAsyncSpy = jest.spyOn(SplashScreen, 'hideAsync')
+    const { toJSON } = render(<App />)
+    expect(toJSON()).toBeNull()
 
-    await waitForElementToBeRemoved(() =>
-      screen.queryByTestId(loadingSpinnerID),
-    )
-    cleanup()
-  })
+    await waitFor(() => expect(hideAsyncSpy).toBeCalledTimes(1))
+    await waitFor(() => {
+      const statusbar = screen.UNSAFE_getByType(StatusBar)
 
-  it('should render the Statusbar correctly', async () => {
-    render(<App />)
-
-    const statusbar = screen.UNSAFE_getByType(StatusBar)
-
-    await waitFor(() =>
       expect(statusbar.props).toEqual({
         style: 'light',
         backgroundColor: 'transparent',
         translucent: true,
-      }),
-    )
-    cleanup()
+      })
+    })
+
+    const rootView = await screen.findByTestId('root-view')
+    expect(rootView).toBeTruthy()
   })
 })

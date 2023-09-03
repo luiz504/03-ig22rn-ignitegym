@@ -1,8 +1,14 @@
-import { fireEvent, render, screen, waitFor } from '~/utils/test-utils'
+import {
+  fireEvent,
+  renderWithAllProviders,
+  screen,
+  waitFor,
+} from '~/utils/test-utils'
 import { SignIn } from '.'
 import { Keyboard } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import RHF, { useForm } from 'react-hook-form'
+import { useAuthSpy } from '~/utils/test-hooks'
 
 jest.mock('react-hook-form', () => ({
   ...jest.requireActual('react-hook-form'),
@@ -31,13 +37,16 @@ describe('SignIn Component', () => {
   }
 
   beforeEach(() => {
+    useAuthSpy()
     useNavigationMock()
     jest.clearAllMocks()
   })
   it('should call Keyboard.dismiss when click on the screen background', async () => {
     const keyboardSpy = jest.spyOn(Keyboard, 'dismiss')
 
-    render(<SignIn />)
+    const three = renderWithAllProviders(<SignIn />).toJSON()
+    await waitFor(() => expect(three).toBeTruthy())
+
     const backgroundView = screen.getByTestId('background-view')
 
     fireEvent.press(backgroundView)
@@ -45,17 +54,19 @@ describe('SignIn Component', () => {
     await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
   })
 
-  it('should handle click btn "signUp" screen correctly', () => {
+  it('should handle click btn "signUp" screen correctly', async () => {
     const { navigate } = useNavigationMock()
     const { keyboardSpy } = useKeyboardSpy()
 
-    render(<SignIn />)
+    const three = renderWithAllProviders(<SignIn />).toJSON()
+    await waitFor(() => expect(three).toBeTruthy())
+
     const signUpBtn = screen.getByTestId('btn-sign-up')
 
     fireEvent.press(signUpBtn)
 
-    expect(navigate).toBeCalledWith('signUp')
-    expect(keyboardSpy).toBeCalledTimes(1)
+    await waitFor(() => expect(navigate).toBeCalledWith('signUp'))
+    await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
   })
 
   it('should trigger setFocus to next input until trigger submit', async () => {
@@ -75,7 +86,8 @@ describe('SignIn Component', () => {
       .spyOn(RHF, 'useForm')
       .mockImplementation(mockUseForm)
 
-    render(<SignIn />)
+    const three = renderWithAllProviders(<SignIn />).toJSON()
+    await waitFor(() => expect(three).toBeTruthy())
 
     // Name Act
     const inputNameElem = screen.getByTestId(elementsIDs.inputEmail)
@@ -90,7 +102,7 @@ describe('SignIn Component', () => {
   // it('should handle signIn correctly', async () => {
   //   const { keyboardSpy } = useKeyboardSpy()
 
-  //   render(<SignIn />)
+  //   renderWithAllProviders(<SignIn />)
   //   const signInBtn = screen.getByTestId('btn-sign-in')
 
   //   fireEvent.press(signInBtn)

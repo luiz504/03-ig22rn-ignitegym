@@ -12,7 +12,6 @@ import { History } from '~/screens/History'
 import { Profile } from '~/screens/Profile'
 import { Exercise } from '~/screens/Exercise'
 import { useTheme } from 'native-base'
-import { Platform } from 'react-native'
 
 type AppRoutes = {
   home: undefined
@@ -40,7 +39,6 @@ export function AppRoutes() {
         tabBarStyle: {
           backgroundColor: colors.gray[600],
           borderTopWidth: 0,
-          height: Platform.OS === 'android' ? 'auto' : 96,
           paddingBottom: sizes[6],
           paddingTop: sizes[6],
         },
@@ -51,7 +49,12 @@ export function AppRoutes() {
         component={Home}
         options={{
           tabBarIcon: ({ color }) => (
-            <HomeIcon fill={color} height={iconSize} width={iconSize} />
+            <HomeIcon
+              fill={color}
+              height={iconSize}
+              width={iconSize}
+              testID="home-icon"
+            />
           ),
         }}
       />
@@ -60,7 +63,12 @@ export function AppRoutes() {
         component={History}
         options={{
           tabBarIcon: ({ color }) => (
-            <HistoryIcon fill={color} height={iconSize} width={iconSize} />
+            <HistoryIcon
+              fill={color}
+              height={iconSize}
+              width={iconSize}
+              testID="history-icon"
+            />
           ),
         }}
       />
@@ -69,7 +77,12 @@ export function AppRoutes() {
         component={Profile}
         options={{
           tabBarIcon: ({ color }) => (
-            <ProfileIcon fill={color} height={iconSize} width={iconSize} />
+            <ProfileIcon
+              fill={color}
+              height={iconSize}
+              width={iconSize}
+              testID="profile-icon"
+            />
           ),
         }}
       />
