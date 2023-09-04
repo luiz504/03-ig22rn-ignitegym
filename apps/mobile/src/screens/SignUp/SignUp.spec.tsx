@@ -1,8 +1,14 @@
-import { fireEvent, render, screen, waitFor } from '~/utils/test-utils'
-import { SignUp } from '.'
 import { Keyboard } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import RHF, { useForm } from 'react-hook-form'
+import * as NativeBaseToast from 'native-base/src/components/composites/Toast'
+
+import { fireEvent, render, screen, waitFor } from '~/utils/test-utils'
+
+import { SignUp } from '.'
+
+import { api } from '~/libs/axios'
+import { AppError } from '~/utils/AppError'
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
@@ -11,6 +17,11 @@ jest.mock('@react-navigation/native', () => ({
 
 jest.mock('react-hook-form', () => ({
   ...jest.requireActual('react-hook-form'),
+}))
+
+jest.mock('native-base/src/components/composites/Toast', () => ({
+  ...jest.requireActual('native-base/src/components/composites/Toast'),
+  useToast: jest.fn(),
 }))
 
 describe('SignUp Component', () => {
@@ -31,6 +42,12 @@ describe('SignUp Component', () => {
   const useKeyboardSpy = () => {
     const keyboardSpy = jest.spyOn(Keyboard, 'dismiss')
     return { keyboardSpy }
+  }
+
+  const useToastShowSpy = () => {
+    const show = jest.fn()
+    jest.mocked(NativeBaseToast.useToast).mockReturnValue({ show } as any)
+    return { show }
   }
 
   beforeEach(() => {
@@ -124,14 +141,101 @@ describe('SignUp Component', () => {
     expect(await screen.findByText('Passwords does not match.')).toBeVisible()
   })
 
-  // it('should handle SignUp correctly', async () => {
-  //   const { keyboardSpy } = useKeyboardSpy()
+  describe('handleSignUp', () => {
+    const formData = {
+      name: 'Luiz Renato',
+      email: 'luiz@email.com',
+      password: '123456',
+      confirmPassword: '123456',
+    }
 
-  //   render(<SignUp />)
-  //   const signInBtn = screen.getByTestId('btn-sign-up')
+    const fillAndSubmitForm = () => {
+      fireEvent.changeText(
+        screen.getByTestId(elementsIDs.inputName),
+        formData.name,
+      )
+      fireEvent.changeText(
+        screen.getByTestId(elementsIDs.inputEmail),
+        formData.email,
+      )
+      fireEvent.changeText(
+        screen.getByTestId(elementsIDs.inputPassword),
+        formData.confirmPassword,
+      )
+      fireEvent.changeText(
+        screen.getByTestId(elementsIDs.inputConfirmPW),
+        formData.confirmPassword,
+      )
+      fireEvent.press(screen.getByTestId('btn-submit'))
+    }
+    it('should handle SignUp correctly', async () => {
+      const registerApiSpy = jest
+        .spyOn(api, 'post')
+        .mockResolvedValue(undefined)
+      const { show } = useToastShowSpy()
+      render(<SignUp />)
 
-  //   fireEvent.press(signInBtn)
+      // Act
+      fillAndSubmitForm()
 
-  //   await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
-  // })
+      await waitFor(() => {
+        expect(registerApiSpy).toBeCalledTimes(1)
+        // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+        expect(registerApiSpy).toBeCalledWith('/users', {
+          email: formData.email,
+          name: formData.name,
+          password: formData.password,
+        })
+      })
+
+      await waitFor(() => expect(show).not.toBeCalled())
+    })
+
+    it('should trigger an toast error if occur an AppError', async () => {
+      const errorMSG = 'Some Error Message'
+      const registerApiSpy = jest
+        .spyOn(api, 'post')
+        .mockRejectedValue(new AppError(errorMSG))
+      const { show } = useToastShowSpy()
+      render(<SignUp />)
+
+      // Act
+      fillAndSubmitForm()
+
+      await waitFor(() => {
+        expect(registerApiSpy).toBeCalledTimes(1)
+      })
+
+      await waitFor(() => expect(show).toHaveBeenCalledTimes(1))
+      await waitFor(() =>
+        expect(show).toHaveBeenCalledWith(
+          expect.objectContaining({ title: errorMSG }),
+        ),
+      )
+    })
+
+    it('should trigger an toast error if occur a Generic Error', async () => {
+      const registerApiSpy = jest
+        .spyOn(api, 'post')
+        .mockRejectedValue(new Error('some generic error'))
+      const { show } = useToastShowSpy()
+      render(<SignUp />)
+
+      // Act
+      fillAndSubmitForm()
+
+      await waitFor(() => {
+        expect(registerApiSpy).toBeCalledTimes(1)
+      })
+
+      await waitFor(() => expect(show).toHaveBeenCalledTimes(1))
+      await waitFor(() =>
+        expect(show).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: 'Fail to create account, try again later.',
+          }),
+        ),
+      )
+    })
+  })
 })

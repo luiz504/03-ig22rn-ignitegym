@@ -1,11 +1,10 @@
 import { FC } from 'react'
 import { Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { Center, Heading, Image, Text, VStack, useToast } from 'native-base'
+import { Center, Heading, Image, Text, VStack } from 'native-base'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-
 import LogoSvg from '~/assets/icons/logo.svg'
 import BGImg from '~/assets/images/background.png'
 
@@ -17,6 +16,7 @@ import { Input } from '~/components/Input'
 import { AuthNavigatorRouteProps } from '~/routes/auth.routes'
 import { useAuth } from '~/hooks/useAuth'
 import { AppError } from '~/utils/AppError'
+import { useToast } from 'native-base/src/components/composites'
 
 const formSignInSchema = z.object({
   email: z
@@ -38,10 +38,6 @@ export const SignIn: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormSignInType>({
     resolver: zodResolver(formSignInSchema),
-    defaultValues: {
-      email: 'luiz@email.com',
-      password: '123456',
-    },
   })
 
   const handleClickSignIn = async ({ email, password }: FormSignInType) => {

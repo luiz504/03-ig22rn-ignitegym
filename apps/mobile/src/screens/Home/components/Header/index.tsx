@@ -45,6 +45,7 @@ export const Header: FC = () => {
         android_ripple={{ color: 'rgba(255,255,255, 0.1)' }}
         bg="transparent"
         onPress={handleSignOut}
+        testID="btn-sign-out"
       >
         <ExitIcon fill={theme.colors.gray[200]} />
       </Button>

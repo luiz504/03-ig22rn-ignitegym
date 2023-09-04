@@ -1,9 +1,10 @@
 import { FC } from 'react'
 import { Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { Center, Heading, Image, Text, VStack, useToast } from 'native-base'
+import { Center, Heading, Image, Text, VStack } from 'native-base'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useToast } from 'native-base/src/components/composites'
 import { z } from 'zod'
 
 import LogoSvg from '~/assets/icons/logo.svg'
@@ -54,12 +55,6 @@ export const SignUp: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormSignUpType>({
     resolver: zodResolver(formSignUpSchema),
-    defaultValues: {
-      name: 'Luiz Renato',
-      email: 'luiz@email.com',
-      password: '123456',
-      confirmPassword: '123456',
-    },
   })
 
   const handleClickSignUp = async (params: FormSignUpType) => {
