@@ -1,14 +1,18 @@
+import { Keyboard } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import RHF, { useForm } from 'react-hook-form'
+import * as NativeBaseToast from 'native-base/src/components/composites/Toast'
+
 import {
   fireEvent,
   renderWithAllProviders,
   screen,
   waitFor,
 } from '~/utils/test-utils'
-import { SignIn } from '.'
-import { Keyboard } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import RHF, { useForm } from 'react-hook-form'
 import { useAuthSpy } from '~/utils/test-hooks'
+import { AppError } from '~/utils/AppError'
+
+import { SignIn } from '.'
 
 jest.mock('react-hook-form', () => ({
   ...jest.requireActual('react-hook-form'),
@@ -17,6 +21,11 @@ jest.mock('react-hook-form', () => ({
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
   useNavigation: jest.fn(),
+}))
+
+jest.mock('native-base/src/components/composites/Toast', () => ({
+  ...jest.requireActual('native-base/src/components/composites/Toast'),
+  useToast: jest.fn(),
 }))
 
 describe('SignIn Component', () => {
@@ -34,6 +43,12 @@ describe('SignIn Component', () => {
   const useKeyboardSpy = () => {
     const keyboardSpy = jest.spyOn(Keyboard, 'dismiss')
     return { keyboardSpy }
+  }
+
+  const useToastShowSpy = () => {
+    const show = jest.fn()
+    jest.mocked(NativeBaseToast.useToast).mockReturnValue({ show } as any)
+    return { show }
   }
 
   beforeEach(() => {
@@ -99,14 +114,71 @@ describe('SignIn Component', () => {
     userFormMock.mockRestore()
   })
 
-  // it('should handle signIn correctly', async () => {
-  //   const { keyboardSpy } = useKeyboardSpy()
+  describe('handleClickSignIn', () => {
+    const credentials = {
+      email: 'john@example.com',
+      password: '123456',
+    }
+    const fillFormAndSubmit = () => {
+      fireEvent.changeText(screen.getByTestId('input-email'), credentials.email)
+      fireEvent.changeText(
+        screen.getByTestId('input-password'),
+        credentials.password,
+      )
+      fireEvent.press(screen.getByTestId('btn-submit'))
+    }
+    it('should handle signIn correctly', async () => {
+      const { signInMock } = useAuthSpy()
+      const { show } = useToastShowSpy()
 
-  //   renderWithAllProviders(<SignIn />)
-  //   const signInBtn = screen.getByTestId('btn-sign-in')
+      renderWithAllProviders(<SignIn />)
 
-  //   fireEvent.press(signInBtn)
+      // Act
+      fillFormAndSubmit()
 
-  //   await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
-  // })
+      await waitFor(() => expect(signInMock).toBeCalledTimes(1))
+      await waitFor(() => expect(show).not.toBeCalled())
+    })
+
+    it('should trigger an toast error if occur an AppError', async () => {
+      const { signInMock } = useAuthSpy()
+      const errorMSG = 'Some Error Message'
+      signInMock.mockRejectedValue(new AppError(errorMSG))
+
+      const { show } = useToastShowSpy()
+
+      renderWithAllProviders(<SignIn />)
+
+      // Act
+      fillFormAndSubmit()
+
+      await waitFor(() => expect(signInMock).toBeCalledTimes(1))
+      await waitFor(() => expect(show).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(show).toHaveBeenCalledWith(
+          expect.objectContaining({ title: errorMSG }),
+        ),
+      )
+    })
+    it('should trigger an toast error if occur a Generic Error', async () => {
+      const { signInMock } = useAuthSpy()
+
+      signInMock.mockRejectedValue(new Error('some generic error'))
+
+      const { show } = useToastShowSpy()
+
+      renderWithAllProviders(<SignIn />)
+
+      // Act
+      fillFormAndSubmit()
+
+      await waitFor(() => expect(signInMock).toBeCalledTimes(1))
+      await waitFor(() => expect(show).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(show).toHaveBeenCalledWith(
+          expect.objectContaining({ title: 'Fail to login, try again later.' }),
+        ),
+      )
+    })
+  })
 })

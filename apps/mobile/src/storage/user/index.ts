@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { UserDTO } from '~/dtos/UserDTO'
+import { UserDTO, userDTOSchema } from '~/dtos/UserDTO'
 import { USER_STORAGE } from '../config'
 
 export async function storageUserSave(user: UserDTO) {
@@ -8,7 +8,19 @@ export async function storageUserSave(user: UserDTO) {
 
 export async function storageUserGet() {
   const user = await AsyncStorage.getItem(USER_STORAGE)
+
   if (!user) return null
 
-  return JSON.parse(user) as UserDTO
+  const parsedUser = JSON.parse(user)
+  const validation = userDTOSchema.safeParse(parsedUser)
+
+  if (validation.success) {
+    return validation.data
+  } else {
+    return null
+  }
+}
+
+export async function storageUserRemove() {
+  await AsyncStorage.removeItem(USER_STORAGE)
 }

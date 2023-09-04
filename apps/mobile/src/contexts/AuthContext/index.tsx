@@ -1,7 +1,11 @@
 import { FC, createContext, useEffect, useState } from 'react'
-import { UserDTO } from '~/dtos/UserDTO'
+import { UserDTO, userDTOSchema } from '~/dtos/UserDTO'
 import { api } from '~/libs/axios'
-import { storageUserGet, storageUserSave } from '~/storage/user'
+import {
+  storageUserGet,
+  storageUserRemove,
+  storageUserSave,
+} from '~/storage/user'
 import { AppError } from '~/utils/AppError'
 
 type SignInDTO = {
@@ -26,11 +30,15 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
   const [user, setUser] = useState<UserDTO | null>(null)
 
   const signIn = async ({ email, password }: SignInDTO) => {
-    if (!email || !password) throw new AppError('Email and password required.')
+    if (!email || !password) {
+      throw new AppError('Email and password required.')
+    }
 
     const { data } = await api.post('/sessions', { email, password })
 
-    if (data.user) {
+    const result = userDTOSchema.safeParse(data?.user)
+
+    if (result.success) {
       const _user: UserDTO = {
         id: data.user.id,
         name: data.user.name,
@@ -39,13 +47,15 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
       }
       setUser(_user)
       await storageUserSave(_user)
-    } else {
-      throw new AppError('Invalid API response data')
+      return
     }
+
+    throw new AppError('Invalid API response data')
   }
 
   const signOut = async () => {
     setUser(null)
+    await storageUserRemove()
   }
 
   const [isLoadingStorageData, setIsLoadingStorageData] = useState(true)
@@ -54,6 +64,7 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
     try {
       setIsLoadingStorageData(true)
       const data = await storageUserGet()
+
       setUser(data)
     } finally {
       setIsLoadingStorageData(false)
