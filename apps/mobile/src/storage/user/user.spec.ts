@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { storageUserGet, storageUserRemove, storageUserSave } from '.'
 import { USER_STORAGE } from '../config'
-import { MockedUser } from '~/utils/test-hooks'
+import { MockedUser } from '~/utils/test/test-hooks'
 
 describe('user storage', () => {
   beforeEach(async () => {

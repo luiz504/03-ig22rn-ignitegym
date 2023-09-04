@@ -1,4 +1,4 @@
-import { render } from '~/utils/test-utils'
+import { render } from '~/utils/test/test-utils'
 import { HistoryCard } from '.'
 
 describe('HistoryCard Component', () => {

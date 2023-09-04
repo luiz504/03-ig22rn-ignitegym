@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '~/utils/test-utils'
+import { fireEvent, render, screen } from '~/utils/test/test-utils'
 import { Group } from '.'
 import { THEME } from '~/theme'
 

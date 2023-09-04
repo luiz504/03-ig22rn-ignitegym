@@ -12,6 +12,7 @@ const config = {
     '!**/babel.config.js',
     '!**/jest.setup.js',
     '!**/*.d.ts',
+    '!**/utils/test/**'
   ],
  
   moduleNameMapper: {

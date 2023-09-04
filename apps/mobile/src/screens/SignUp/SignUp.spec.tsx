@@ -8,13 +8,13 @@ import {
   renderWithAllProviders,
   screen,
   waitFor,
-} from '~/utils/test-utils'
+} from '~/utils/test/test-utils'
 
 import { SignUp } from '.'
 
 import { api } from '~/libs/axios'
 import { AppError } from '~/utils/AppError'
-import { useAuthSpy } from '~/utils/test-hooks'
+import { useAuthSpy } from '~/utils/test/test-hooks'
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
@@ -67,7 +67,7 @@ describe('SignUp Component', () => {
     useNavigationMock()
     jest.clearAllMocks()
   })
-  describe('Form validations and sideffect', () => {
+  describe('Form validations and sideEffect', () => {
     it('should call Keyboard.dismiss when click on the screen background', async () => {
       const { keyboardSpy } = useKeyboardSpy()
 

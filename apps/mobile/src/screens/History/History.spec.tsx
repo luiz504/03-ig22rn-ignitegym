@@ -1,4 +1,4 @@
-import { render } from '~/utils/test-utils'
+import { render } from '~/utils/test/test-utils'
 import { History } from '.'
 
 describe('History Component', () => {

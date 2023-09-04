@@ -3,14 +3,14 @@ import {
   renderWithAllProviders,
   screen,
   waitFor,
-} from '~/utils/test-utils'
-import { MockedUser, useAuthSpy } from '~/utils/test-hooks'
+} from '~/utils/test/test-utils'
+import { MockedToken, MockedUser, useAuthSpy } from '~/utils/test/test-hooks'
 import DefaultPhoto from '~/assets/images/userPhotoDefault.png'
 import { Header } from '.'
 
 describe('Header Component', () => {
   it('should render correctly the user avatar and name', async () => {
-    useAuthSpy(MockedUser)
+    useAuthSpy({ user: MockedUser, token: MockedToken })
 
     renderWithAllProviders(<Header />)
 
@@ -21,7 +21,7 @@ describe('Header Component', () => {
   })
 
   it('should render correctly the default avatar when the user does not have it', async () => {
-    useAuthSpy({ ...MockedUser, avatar: null })
+    useAuthSpy({ user: { ...MockedUser, avatar: null }, token: MockedToken })
 
     renderWithAllProviders(<Header />)
 
@@ -32,7 +32,7 @@ describe('Header Component', () => {
     )
   })
   it('should Sign Out correctly', async () => {
-    const { signOutMock } = useAuthSpy(MockedUser)
+    const { signOutMock } = useAuthSpy({ user: MockedUser, token: MockedToken })
     const three = renderWithAllProviders(<Header />).toJSON()
 
     await waitFor(() => expect(three).toBeTruthy())
