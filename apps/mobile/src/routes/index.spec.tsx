@@ -3,14 +3,18 @@ import {
   renderWithNBAuthProviders,
   screen,
   waitForElementToBeRemoved,
-} from '~/utils/test-utils'
+} from '~/utils/test/test-utils'
 import { Routes } from '.'
-import { MockedUser, useAuthSpyShallow } from '~/utils/test-hooks'
+import {
+  MockedToken,
+  MockedUser,
+  useAuthSpyShallow,
+} from '~/utils/test/test-hooks'
 
 describe('Routes', () => {
   it('should render AppRoutes when user is authenticated', async () => {
     jest.useFakeTimers()
-    useAuthSpyShallow(MockedUser)
+    useAuthSpyShallow({ user: MockedUser, token: MockedToken })
 
     renderWithNBAuthProviders(<Routes />)
 
@@ -27,7 +31,7 @@ describe('Routes', () => {
   })
   it('should render AuthRoutes when user is not authenticated', async () => {
     jest.useFakeTimers()
-    useAuthSpyShallow()
+    useAuthSpyShallow({ user: null, token: null })
 
     renderWithNBAuthProviders(<Routes />)
 

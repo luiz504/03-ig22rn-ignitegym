@@ -8,8 +8,8 @@ import {
   renderWithAllProviders,
   screen,
   waitFor,
-} from '~/utils/test-utils'
-import { useAuthSpy } from '~/utils/test-hooks'
+} from '~/utils/test/test-utils'
+import { useAuthSpy } from '~/utils/test/test-hooks'
 import { AppError } from '~/utils/AppError'
 
 import { SignIn } from '.'

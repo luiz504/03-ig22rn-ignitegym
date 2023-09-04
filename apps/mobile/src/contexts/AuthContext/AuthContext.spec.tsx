@@ -6,8 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { AuthContext, AuthContextProvider } from '.'
 import { AppError } from '~/utils/AppError'
 import { api } from '~/libs/axios'
-import { MockedUser } from '~/utils/test-hooks'
+import { MockedToken, MockedUser } from '~/utils/test/test-hooks'
 import * as StoreUserModule from '~/storage/user'
+import * as StoreAuthModule from '~/storage/auth'
 
 describe('AuthContext', () => {
   beforeEach(async () => {
@@ -16,9 +17,15 @@ describe('AuthContext', () => {
 
   describe('loadUserStoredData effect', () => {
     it('should load the stored userData and handle the loading state', async () => {
+      const MockedToken = 'someToken'
+
       jest
         .spyOn(StoreUserModule, 'storageUserGet')
         .mockResolvedValue(MockedUser)
+      jest
+        .spyOn(StoreAuthModule, 'storageAuthTokenGet')
+        .mockResolvedValue(MockedToken)
+
       const { result } = renderHook(() => useContext(AuthContext), {
         wrapper: AuthContextProvider,
       })
@@ -31,6 +38,11 @@ describe('AuthContext', () => {
         expect(result.current.isLoadingStorageData).toBe(false),
       )
       await waitFor(() => expect(result.current.user).toBe(MockedUser))
+      await waitFor(() =>
+        expect(api.defaults.headers.common.Authorization).toBe(
+          `Bearer ${MockedToken}`,
+        ),
+      )
     })
   })
 
@@ -83,8 +95,12 @@ describe('AuthContext', () => {
       }
     })
 
-    it('should throw an error if the API response is invalid', async () => {
-      jest.spyOn(api, 'post').mockResolvedValue({ data: { user: MockedUser } })
+    it('should sign in correctly', async () => {
+      const mockPost = jest
+        .spyOn(api, 'post')
+        .mockImplementation(() =>
+          Promise.resolve({ data: { user: MockedUser, token: MockedToken } }),
+        )
       const storeSaveUserSpy = jest.spyOn(StoreUserModule, 'storageUserSave')
       const { result } = renderHook(() => useContext(AuthContext), {
         wrapper: AuthContextProvider,
@@ -105,6 +121,11 @@ describe('AuthContext', () => {
         expect(storeSaveUserSpy).toHaveBeenCalledWith(MockedUser),
       )
       await waitFor(() => expect(result.current.user).toEqual(MockedUser))
+      expect(api.defaults.headers.common.Authorization).toEqual(
+        `Bearer ${MockedToken}`,
+      )
+
+      mockPost.mockRestore()
     })
   })
 
@@ -134,6 +155,7 @@ describe('AuthContext', () => {
 
       await waitFor(() => expect(result.current.user).toEqual(null))
       await waitFor(() => expect(storeSaveRemoveSpy).toHaveBeenCalledTimes(1))
+      expect(api.defaults.headers.common.Authorization).toBeUndefined()
     })
   })
 })

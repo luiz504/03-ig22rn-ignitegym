@@ -1,12 +1,20 @@
-import { MockedUser, useAuthSpyShallow } from '~/utils/test-hooks'
-import { cleanup, renderWithAllProviders, screen } from '~/utils/test-utils'
+import {
+  MockedToken,
+  MockedUser,
+  useAuthSpyShallow,
+} from '~/utils/test/test-hooks'
+import {
+  cleanup,
+  renderWithAllProviders,
+  screen,
+} from '~/utils/test/test-utils'
 
 import { THEME } from '~/theme'
 import { AppRoutes } from './app.routes'
 
 describe('App Router', () => {
   it('should render correctly', async () => {
-    useAuthSpyShallow(MockedUser)
+    useAuthSpyShallow({ user: MockedUser, token: MockedToken })
 
     renderWithAllProviders(<AppRoutes />)
 

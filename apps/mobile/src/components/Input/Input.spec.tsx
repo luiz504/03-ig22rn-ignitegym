@@ -1,4 +1,4 @@
-import { render, screen } from '~/utils/test-utils'
+import { render, screen } from '~/utils/test/test-utils'
 import { Input } from '.'
 import { Input as NBInput } from 'native-base'
 

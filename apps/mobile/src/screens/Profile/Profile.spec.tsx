@@ -1,5 +1,5 @@
 /* eslint-disable testing-library/no-wait-for-multiple-assertions */
-import { fireEvent, render, screen, waitFor } from '~/utils/test-utils'
+import { fireEvent, render, screen, waitFor } from '~/utils/test/test-utils'
 import { Profile } from '.'
 import * as ImagePicker from 'expo-image-picker'
 import * as NativeBaseToast from 'native-base/src/components/composites/Toast'
