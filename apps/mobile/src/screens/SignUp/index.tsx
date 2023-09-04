@@ -10,13 +10,15 @@ import { z } from 'zod'
 import LogoSvg from '~/assets/icons/logo.svg'
 import BGImg from '~/assets/images/background.png'
 
+import { useAuth } from '~/hooks/useAuth'
+
+import { api } from '~/libs/axios'
 import { formErrorMessages } from '~/constants/formErrors'
+import { AppError } from '~/utils/AppError'
 
 import { Button } from '~/components/Button'
 import { Input } from '~/components/Input'
-import { api } from '~/libs/axios'
-
-import { AppError } from '~/utils/AppError'
+import { AuthNavigatorRouteProps } from '~/routes/auth.routes'
 
 const formSignUpSchema = z
   .object({
@@ -45,8 +47,9 @@ const formSignUpSchema = z
 
 type FormSignUpType = z.infer<typeof formSignUpSchema>
 export const SignUp: FC = () => {
-  const navigator = useNavigation()
+  const navigator = useNavigation<AuthNavigatorRouteProps>()
   const toast = useToast()
+  const { signIn } = useAuth()
 
   const {
     control,
@@ -66,6 +69,11 @@ export const SignUp: FC = () => {
         email,
         password,
       })
+      try {
+        await signIn({ email, password })
+      } catch (err) {
+        navigator.navigate('signIn')
+      }
     } catch (err) {
       const isAppError = err instanceof AppError
       const title = isAppError
