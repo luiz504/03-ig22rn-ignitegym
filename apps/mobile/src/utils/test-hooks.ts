@@ -3,7 +3,7 @@ import * as useAuthHookModule from '~/hooks/useAuth'
 import * as StorageUserModule from '~/storage/user'
 
 const MockedUser: UserDTO = {
-  id: 'some-id',
+  id: 300,
   email: 'john@example.com',
   name: 'John Doe',
   avatar: 'avatar:url',

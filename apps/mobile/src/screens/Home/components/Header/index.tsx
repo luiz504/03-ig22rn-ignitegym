@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { Button, HStack, Heading, Text, VStack, useTheme } from 'native-base'
 
+import DefaultPhoto from '~/assets/images/userPhotoDefault.png'
 import ExitIcon from '~/assets/icons/exit.svg'
 
 import { UserPhoto } from '~/components/UserPhoto'
@@ -9,24 +10,27 @@ import { useAuth } from '~/hooks/useAuth'
 export const Header: FC = () => {
   const theme = useTheme()
 
-  const { signOut } = useAuth()
+  const { signOut, user } = useAuth()
 
   const handleSignOut = () => {
     signOut()
   }
 
+  const avatarSource = user?.avatar ? { uri: user.avatar } : DefaultPhoto
+
   return (
     <HStack pt={16} pb={5} px={8} alignItems="center" bg="gray.600">
       <UserPhoto
         size={16}
-        source={{ uri: 'https://github.com/luiz504.png' }}
+        source={avatarSource}
         alt="User photo"
         mr={4}
+        testID="user-avatar"
       />
 
       <VStack flex={1}>
         <Text color="gray.100" fontSize="md" lineHeight="md-160">
-          Header
+          Hi,
         </Text>
 
         <Heading
@@ -35,7 +39,7 @@ export const Header: FC = () => {
           lineHeight="md-160"
           fontFamily="heading"
         >
-          Luiz Bueno
+          {user?.name}
         </Heading>
       </VStack>
 

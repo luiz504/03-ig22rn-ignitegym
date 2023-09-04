@@ -38,6 +38,10 @@ export const SignIn: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormSignInType>({
     resolver: zodResolver(formSignInSchema),
+    defaultValues: {
+      email: 'luiz@email.com',
+      password: '123456',
+    },
   })
 
   const handleClickSignIn = async ({ email, password }: FormSignInType) => {
