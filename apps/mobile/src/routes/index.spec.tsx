@@ -11,7 +11,11 @@ import {
   useAuthSpyShallow,
 } from '~/utils/test/test-hooks'
 
+jest.mock('../screens/Home', () => require('__mocks__/Home'))
 describe('Routes', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
   it('should render AppRoutes when user is authenticated', async () => {
     jest.useFakeTimers()
     useAuthSpyShallow({ user: MockedUser, token: MockedToken })

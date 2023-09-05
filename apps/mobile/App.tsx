@@ -4,12 +4,14 @@ import { useFonts } from 'expo-font'
 import { StatusBar } from 'expo-status-bar'
 import { Box, NativeBaseProvider } from 'native-base'
 import * as SplashScreen from 'expo-splash-screen'
+import { queryClient } from '~/libs/query-client'
 
 import { Routes } from '~/routes'
 
 import { AuthContextProvider } from '~/contexts/AuthContext'
 
 import { THEME } from '~/theme'
+import { QueryClientProvider } from '@tanstack/react-query'
 
 SplashScreen.preventAutoHideAsync()
 export default function App() {
@@ -38,9 +40,11 @@ export default function App() {
 
       <NativeBaseProvider theme={THEME}>
         <AuthContextProvider>
-          <Box bg={'gray.800'} flex={1} testID="root-view">
-            <Routes />
-          </Box>
+          <QueryClientProvider client={queryClient}>
+            <Box bg={'gray.800'} flex={1} testID="root-view">
+              <Routes />
+            </Box>
+          </QueryClientProvider>
         </AuthContextProvider>
       </NativeBaseProvider>
     </>

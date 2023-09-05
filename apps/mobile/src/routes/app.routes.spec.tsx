@@ -12,6 +12,7 @@ import {
 import { THEME } from '~/theme'
 import { AppRoutes } from './app.routes'
 
+jest.mock('../screens/Home', () => require('__mocks__/Home'))
 describe('App Router', () => {
   it('should render correctly', async () => {
     useAuthSpyShallow({ user: MockedUser, token: MockedToken })

@@ -1,8 +1,13 @@
+import { FC, ReactNode } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { render } from '@testing-library/react-native'
 import { NativeBaseProvider } from 'native-base'
-import { FC, ReactNode } from 'react'
+
 import { AuthContextProvider } from '~/contexts/AuthContext'
+
+import { queryClient } from '~/libs/query-client'
+
 import { THEME } from '~/theme'
 
 const AllTheProviders: FC<{ children: ReactNode }> = ({ children }) => {
@@ -13,7 +18,9 @@ const AllTheProviders: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <NativeBaseProvider theme={THEME} initialWindowMetrics={inset}>
       <AuthContextProvider>
-        <NavigationContainer>{children}</NavigationContainer>
+        <QueryClientProvider client={queryClient}>
+          <NavigationContainer>{children}</NavigationContainer>
+        </QueryClientProvider>
       </AuthContextProvider>
     </NativeBaseProvider>
   )

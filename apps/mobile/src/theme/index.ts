@@ -36,6 +36,7 @@ export const THEME = extendTheme({
     33: 148,
   },
   lineHeights: {
+    'xs-160': 19.2,
     'sm-160': 22.4,
     'md-160': 25.6,
     'lg-160': 28.8,
