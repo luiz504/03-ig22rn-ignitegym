@@ -8,39 +8,35 @@ import { useRefreshOnFocus } from '../useRefreshOnFocus'
 import { useAppToast } from '../useAppToast'
 
 import { ExerciseDTO } from '~/dtos/ExerciseDTO'
-export const useFetchExercisesByGroupQuery = ({
-  enabled,
-  groupName,
+export const useFetchExerciseDetailsQuery = ({
+  exerciseId,
 }: {
-  enabled: boolean
-  groupName?: string
+  exerciseId: number
 }) => {
   const toast = useAppToast()
 
   const {
-    data: exercises = [],
-    isLoading: isLoadingExercises,
+    data: exercise,
     refetch,
     ...rest
   } = useQuery({
-    queryKey: ['exercises', { groupName }],
+    queryKey: ['exercise-details', { exerciseId }],
     queryFn: async () => {
       try {
-        const response = await api.get(`/exercises/byGroup/${groupName}`)
-        return response.data as ExerciseDTO[]
+        const response = await api.get(`/exercises/${exerciseId}`)
+        return response.data as ExerciseDTO
       } catch (err) {
         toast.showError({
-          title: handleErrorMessage(err, 'Fail to load Exercises from Group.'),
+          title: handleErrorMessage(err, 'Fail to load Exercise Details.'),
         })
 
         throw err
       }
     },
-    enabled,
     refetchOnWindowFocus: true,
   })
 
   useRefreshOnFocus(refetch)
 
-  return { exercises, isLoadingExercises, ...rest }
+  return { exercise, ...rest }
 }

@@ -1,6 +1,6 @@
+import { FC } from 'react'
 import { HStack, Heading, Text, VStack } from 'native-base'
 import { IHStackProps } from 'native-base/lib/typescript/components/primitives/Stack/HStack'
-import { FC } from 'react'
 
 export const HistoryCard: FC<IHStackProps> = ({ ...rest }) => {
   return (

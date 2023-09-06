@@ -1,10 +1,10 @@
-import { render, screen } from '~/utils/test/test-utils'
+import { renderWithNBProviders, screen } from '~/utils/test/test-utils'
 import { Header } from '.'
 
 describe('Header Component', () => {
   it('should render correctly', () => {
     const title = 'Title'
-    render(<Header title={title} />)
+    renderWithNBProviders(<Header title={title} />)
 
     const titleElement = screen.getByText(title)
 

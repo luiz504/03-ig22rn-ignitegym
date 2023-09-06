@@ -14,7 +14,7 @@ import { SignUp } from '.'
 
 import { api } from '~/libs/axios'
 import { AppError } from '~/utils/AppError'
-import { useAuthSpy } from '~/utils/test/test-hooks'
+import { useAuthContextSpy } from '~/utils/test'
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
@@ -64,10 +64,11 @@ describe('SignUp Component', () => {
   }
 
   beforeEach(() => {
+    useAuthContextSpy()
     useNavigationMock()
     jest.clearAllMocks()
   })
-  describe('Form validations and sideEffect', () => {
+  describe('Form validations and side effects', () => {
     it('should call Keyboard.dismiss when click on the screen background', async () => {
       const { keyboardSpy } = useKeyboardSpy()
 
@@ -183,7 +184,7 @@ describe('SignUp Component', () => {
       fireEvent.press(screen.getByTestId('btn-submit'))
     }
     it('should handle SignUp correctly', async () => {
-      const { signInMock } = useAuthSpy()
+      const { signInMock } = useAuthContextSpy()
       signInMock.mockResolvedValue(undefined)
 
       const registerApiSpy = jest
@@ -218,7 +219,7 @@ describe('SignUp Component', () => {
     })
 
     it('should redirect to SignIn screen if the signIn fails', async () => {
-      const { signInMock } = useAuthSpy()
+      const { signInMock } = useAuthContextSpy()
       signInMock.mockRejectedValue('dd')
       const { navigate } = useNavigationMock()
       const registerApiSpy = jest

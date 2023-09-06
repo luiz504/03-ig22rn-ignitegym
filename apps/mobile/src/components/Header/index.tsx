@@ -1,5 +1,5 @@
-import { Center, Heading } from 'native-base'
 import { FC } from 'react'
+import { Center, Heading } from 'native-base'
 
 type HeaderProps = {
   title: string

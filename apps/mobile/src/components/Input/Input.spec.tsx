@@ -1,4 +1,4 @@
-import { render, screen } from '~/utils/test/test-utils'
+import { renderWithNBProviders, screen } from '~/utils/test/test-utils'
 import { Input } from '.'
 import { Input as NBInput } from 'native-base'
 
@@ -6,7 +6,7 @@ describe('Input Component', () => {
   const inputID = 'input'
   const textErrorID = `${inputID}-error-text`
   it('should render Correctly', async () => {
-    render(<Input testID={inputID} />)
+    renderWithNBProviders(<Input testID={inputID} />)
 
     // Initial Assert
     const inputElement = screen.getByTestId(inputID)
@@ -20,7 +20,7 @@ describe('Input Component', () => {
 
   it('should render correctly the errors and it layout effects', async () => {
     const textError = 'This is an error'
-    render(<Input testID={inputID} errorMsg={textError} />)
+    renderWithNBProviders(<Input testID={inputID} errorMsg={textError} />)
 
     const inputElement = screen.UNSAFE_getByType(NBInput)
     const errorTextElement = screen.getByTestId(textErrorID)

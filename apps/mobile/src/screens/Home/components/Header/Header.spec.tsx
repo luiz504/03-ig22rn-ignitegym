@@ -2,15 +2,15 @@ import {
   fireEvent,
   renderWithAllProviders,
   screen,
-  waitFor,
 } from '~/utils/test/test-utils'
-import { MockedToken, MockedUser, useAuthSpy } from '~/utils/test/test-hooks'
+
 import DefaultPhoto from '~/assets/images/userPhotoDefault.png'
 import { Header } from '.'
+import { MockedUser, useAuthContextSpy } from '~/utils/test'
 
 describe('Header Component', () => {
   it('should render correctly the user avatar and name', async () => {
-    useAuthSpy({ user: MockedUser, token: MockedToken })
+    useAuthContextSpy({ user: MockedUser })
 
     renderWithAllProviders(<Header />)
 
@@ -21,7 +21,9 @@ describe('Header Component', () => {
   })
 
   it('should render correctly the default avatar when the user does not have it', async () => {
-    useAuthSpy({ user: { ...MockedUser, avatar: null }, token: MockedToken })
+    useAuthContextSpy({
+      user: { ...MockedUser, avatar: null },
+    })
 
     renderWithAllProviders(<Header />)
 
@@ -32,10 +34,10 @@ describe('Header Component', () => {
     )
   })
   it('should Sign Out correctly', async () => {
-    const { signOutMock } = useAuthSpy({ user: MockedUser, token: MockedToken })
-    const three = renderWithAllProviders(<Header />).toJSON()
-
-    await waitFor(() => expect(three).toBeTruthy())
+    const { signOutMock } = useAuthContextSpy({
+      user: MockedUser,
+    })
+    renderWithAllProviders(<Header />)
 
     fireEvent.press(screen.getByTestId('btn-sign-out'))
 

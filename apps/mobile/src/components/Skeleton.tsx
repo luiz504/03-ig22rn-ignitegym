@@ -1,17 +1,7 @@
 import { Skeleton as SkeletonPrimitive } from 'native-base'
 import { InterfaceSkeletonProps } from 'native-base/src/components/composites/Skeleton/types'
 
-const MD = ({ children, ...props }: InterfaceSkeletonProps) => (
-  <SkeletonPrimitive
-    {...props}
-    rounded={'md'}
-    endColor="gray.300"
-    startColor="gray.400"
-  >
-    {children}
-  </SkeletonPrimitive>
-)
-const SM = ({ children, ...props }: InterfaceSkeletonProps) => (
+const BaseSkeleton = ({ children, ...props }: InterfaceSkeletonProps) => (
   <SkeletonPrimitive
     {...props}
     rounded="sm"
@@ -21,5 +11,11 @@ const SM = ({ children, ...props }: InterfaceSkeletonProps) => (
     {children}
   </SkeletonPrimitive>
 )
+const SM = (props: InterfaceSkeletonProps) =>
+  BaseSkeleton({ rounded: 'sm', ...props })
+const MD = (props: InterfaceSkeletonProps) =>
+  BaseSkeleton({ rounded: 'md', ...props })
+const LG = (props: InterfaceSkeletonProps) =>
+  BaseSkeleton({ rounded: 'lg', ...props })
 
-export const Skeleton = { MD, SM }
+export const Skeleton = { MD, SM, LG }

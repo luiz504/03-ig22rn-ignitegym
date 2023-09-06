@@ -1,9 +1,9 @@
-import { render, screen } from '~/utils/test/test-utils'
+import { renderWithNBProviders, screen } from '~/utils/test/test-utils'
 import { Loading } from '.'
 
 describe('Loading Component', () => {
   it('should render the component default props correctly', () => {
-    render(<Loading />)
+    renderWithNBProviders(<Loading />)
 
     expect(screen.getByTestId('loading-spinner')).toHaveStyle({
       display: 'flex',
@@ -16,7 +16,7 @@ describe('Loading Component', () => {
   })
 
   it('should be able to style the container correctly', () => {
-    render(<Loading containerStyle={{ padding: 24 }} />)
+    renderWithNBProviders(<Loading containerStyle={{ padding: 24 }} />)
 
     expect(screen.getByTestId('loading-spinner')).toHaveStyle({
       display: 'flex',

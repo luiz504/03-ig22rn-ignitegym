@@ -27,6 +27,7 @@ export const ExerciseCard: FC<ExerciseCardProps> = ({ exercise, ...rest }) => {
           h={16}
           rounded="md"
           resizeMode="cover"
+          testID="exercise-thumb"
         />
 
         <VStack flex={1} ml={4}>
@@ -35,6 +36,7 @@ export const ExerciseCard: FC<ExerciseCardProps> = ({ exercise, ...rest }) => {
             fontSize="lg"
             lineHeight="lg-160"
             fontFamily="heading"
+            testID="exercise-name"
           >
             {exercise.name}
           </Heading>
@@ -44,6 +46,7 @@ export const ExerciseCard: FC<ExerciseCardProps> = ({ exercise, ...rest }) => {
             lineHeight="sm-160"
             numberOfLines={2}
             mt={'0.5'}
+            testID="exercise-instructions"
           >
             {exercise.series} sets x {exercise.repetitions} reps
           </Text>

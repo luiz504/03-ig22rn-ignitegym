@@ -1,5 +1,5 @@
-import { IImageProps, Image } from 'native-base'
 import { FC } from 'react'
+import { IImageProps, Image } from 'native-base'
 
 export interface UserPhotoProps extends IImageProps {
   size: number

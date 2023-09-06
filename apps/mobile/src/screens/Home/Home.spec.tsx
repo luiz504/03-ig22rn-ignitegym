@@ -1,31 +1,29 @@
-import {
-  cleanup,
-  renderWithAllProviders,
-  screen,
-} from '~/utils/test/test-utils'
+import { renderWithAllProviders, screen } from '~/utils/test/test-utils'
 import { Home } from '.'
-import { useAuthSpy, MockedUser, MockedToken } from '~/utils/test/test-hooks'
 import * as UseFetchGroupsModule from '~/hooks/useFetchGroupsQuery'
 import * as UseFetchExercisesModule from '~/hooks/useFetchExercisesByGroupQuery'
-import { ExerciseDTO } from '~/dtos/ExerciseDTO'
+
+import {
+  MockedExercises,
+  MockedGroups,
+  MockedUser,
+  useAuthContextSpy,
+} from '~/utils/test'
 
 describe('Home Component', () => {
-  const mockGroups = ['Batata']
-  const mockExercises: ExerciseDTO[] = []
   it('should render correctly', async () => {
     jest
       .spyOn(UseFetchGroupsModule, 'useFetchGroupsQuery')
-      .mockReturnValue({ groups: mockGroups, isLoadingGroups: false } as any)
+      .mockReturnValue({ groups: MockedGroups, isLoadingGroups: false } as any)
     jest
-      .spyOn(UseFetchExercisesModule, 'useFetchExercisesByGroup')
+      .spyOn(UseFetchExercisesModule, 'useFetchExercisesByGroupQuery')
       .mockReturnValue({
-        exercises: mockExercises,
+        exercises: MockedExercises,
         isLoadingExercises: false,
       } as any)
-    useAuthSpy({ user: MockedUser, token: MockedToken })
+    useAuthContextSpy({ user: MockedUser })
     renderWithAllProviders(<Home />)
 
     await screen.findByTestId('home-container')
-    cleanup()
   })
 })

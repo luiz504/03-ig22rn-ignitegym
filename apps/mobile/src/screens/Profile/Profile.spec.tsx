@@ -1,9 +1,15 @@
 /* eslint-disable testing-library/no-wait-for-multiple-assertions */
-import { fireEvent, render, screen, waitFor } from '~/utils/test/test-utils'
+import {
+  fireEvent,
+  renderWithAllProviders,
+  screen,
+  waitFor,
+} from '~/utils/test/test-utils'
 import { Profile } from '.'
 import * as ImagePicker from 'expo-image-picker'
 import * as NativeBaseToast from 'native-base/src/components/composites/Toast'
 import * as FileSystem from 'expo-file-system'
+import { MockedUser, useAuthContextSpy } from '~/utils/test'
 
 jest.mock('native-base/src/components/composites/Toast', () => ({
   ...jest.requireActual('native-base/src/components/composites/Toast'),
@@ -24,12 +30,13 @@ describe('Profile Component', () => {
   }
 
   beforeEach(() => {
+    useAuthContextSpy({ user: MockedUser, isLoadingData: false })
     jest.clearAllMocks()
 
     // jest.mocked(useToast).mockReturnValue(toastMock as any)
   })
   it('should render correctly', () => {
-    render(<Profile />)
+    renderWithAllProviders(<Profile />)
   })
 
   describe('Change Photo', () => {
@@ -40,7 +47,7 @@ describe('Profile Component', () => {
 
       const { getInfoAsync } = useFileSystemSpy()
 
-      render(<Profile />)
+      renderWithAllProviders(<Profile />)
 
       const changePhotoBtn = screen.getByTestId(btnChangePhotoID)
 
@@ -68,7 +75,7 @@ describe('Profile Component', () => {
         .spyOn(ImagePicker, 'launchImageLibraryAsync')
         .mockRejectedValue(true)
 
-      render(<Profile />)
+      renderWithAllProviders(<Profile />)
 
       const changePhotoBtn = screen.getByTestId(btnChangePhotoID)
 
@@ -90,7 +97,7 @@ describe('Profile Component', () => {
         })
       const { getInfoAsync } = useFileSystemSpy()
 
-      render(<Profile />)
+      renderWithAllProviders(<Profile />)
 
       const changePhotoBtn = screen.getByTestId(btnChangePhotoID)
 
@@ -124,7 +131,7 @@ describe('Profile Component', () => {
         })
       const { getInfoAsync } = useFileSystemSpy()
 
-      render(<Profile />)
+      renderWithAllProviders(<Profile />)
 
       const changePhotoBtn = screen.getByTestId(btnChangePhotoID)
 
@@ -155,7 +162,7 @@ describe('Profile Component', () => {
         .spyOn(FileSystem, 'getInfoAsync')
         .mockResolvedValue({ exists: false } as any)
 
-      render(<Profile />)
+      renderWithAllProviders(<Profile />)
 
       const previousPhotoURI =
         screen.getByTestId(imgUserPhotoID).props.source.uri
@@ -196,7 +203,7 @@ describe('Profile Component', () => {
         size: 5.1 * 1024 * 1024,
       } as any)
 
-      render(<Profile />)
+      renderWithAllProviders(<Profile />)
 
       const previousPhotoURI =
         screen.getByTestId(imgUserPhotoID).props.source.uri
@@ -229,7 +236,7 @@ describe('Profile Component', () => {
         size: 3 * 1024 * 1024,
       } as any)
 
-      render(<Profile />)
+      renderWithAllProviders(<Profile />)
 
       const changePhotoBtn = screen.getByTestId(btnChangePhotoID)
 

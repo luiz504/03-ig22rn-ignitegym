@@ -1,10 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { useToast } from 'native-base'
+
 import { api } from '~/libs/axios'
-import { AppError } from '~/utils/AppError'
+
+import { handleErrorMessage } from '~/utils/AppError'
+
+import { useAppToast } from '../useAppToast'
 
 export const useFetchGroupsQuery = () => {
-  const toast = useToast()
+  const toast = useAppToast()
 
   const {
     data: groups = [],
@@ -18,10 +21,9 @@ export const useFetchGroupsQuery = () => {
 
         return response.data as string[]
       } catch (err) {
-        const isAppError = err instanceof AppError
-        const title = isAppError ? err.message : 'Fail to load Groups.'
-
-        toast.show({ placement: 'top', bg: 'red.500', title })
+        toast.showError({
+          title: handleErrorMessage(err, 'Fail to load Groups.'),
+        })
 
         throw err
       }

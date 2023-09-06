@@ -1,4 +1,7 @@
-import { renderHook } from '@testing-library/react-native'
+import { renderHook, waitFor } from '@testing-library/react-native'
+
+import { AuthContextProvider } from '~/contexts/AuthContext'
+
 import { useAuth } from '.'
 
 describe('useAuth hook', () => {
@@ -17,5 +20,20 @@ describe('useAuth hook', () => {
     // Restore the original console.error function
     // eslint-disable-next-line no-console
     console.error = originalError
+  })
+
+  it('should return the context value correctly', async () => {
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthContextProvider,
+    })
+
+    expect(result.current).toEqual({
+      isLoadingStorageData: true,
+      signIn: expect.any(Function),
+      signOut: expect.any(Function),
+      user: null,
+    })
+
+    await waitFor(() => expect(result.current.isLoadingStorageData).toBe(false))
   })
 })

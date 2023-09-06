@@ -1,53 +1,53 @@
-import {
-  act,
-  renderWithNBAuthProviders,
-  screen,
-  waitForElementToBeRemoved,
-} from '~/utils/test/test-utils'
-import { Routes } from '.'
-import {
-  MockedToken,
-  MockedUser,
-  useAuthSpyShallow,
-} from '~/utils/test/test-hooks'
+import { View } from 'react-native'
 
-jest.mock('../screens/Home', () => require('__mocks__/Home'))
+import { renderWithNBAuthProviders, screen } from '~/utils/test/test-utils'
+
+import { MockedUser, useAuthContextSpy } from '~/utils/test'
+
+import { Routes } from '.'
+
+const AppRoutes = () => <View testID="app-routes" />
+jest.mock('./app.routes', () => {
+  return {
+    AppRoutes,
+  }
+})
+const AuthRoutes = () => <View testID="auth-routes" />
+jest.mock('./auth.routes', () => {
+  return {
+    AuthRoutes,
+  }
+})
 describe('Routes', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
   it('should render AppRoutes when user is authenticated', async () => {
-    jest.useFakeTimers()
-    useAuthSpyShallow({ user: MockedUser, token: MockedToken })
+    useAuthContextSpy({
+      user: MockedUser,
+
+      isLoadingData: false,
+    })
 
     renderWithNBAuthProviders(<Routes />)
 
-    await waitForElementToBeRemoved(() =>
-      screen.queryByTestId('loading-spinner'),
-    )
-
-    act(() => {
-      // Avoid warning errors due AuthContext state changes
-      jest.advanceTimersByTime(1000)
-    })
-
-    expect(await screen.findByTestId('home-container')).toBeTruthy()
+    expect(screen.getByTestId('app-routes')).toBeTruthy()
   })
   it('should render AuthRoutes when user is not authenticated', async () => {
-    jest.useFakeTimers()
-    useAuthSpyShallow({ user: null, token: null })
+    useAuthContextSpy({ user: null, isLoadingData: false })
 
     renderWithNBAuthProviders(<Routes />)
 
-    await waitForElementToBeRemoved(() =>
-      screen.queryByTestId('loading-spinner'),
-    )
+    expect(screen.getByTestId('auth-routes')).toBeTruthy()
+  })
 
-    act(() => {
-      // Avoid warning errors due AuthContext state changes
-      jest.advanceTimersByTime(1000)
-    })
+  it('should render a LoadingSpinner when the userData is being loaded', async () => {
+    useAuthContextSpy({ isLoadingData: true })
 
-    expect(await screen.findByTestId('signIn-container')).toBeTruthy()
+    renderWithNBAuthProviders(<Routes />)
+
+    expect(screen.getByTestId('loading-spinner')).toBeTruthy()
+    expect(screen.queryByTestId('auth-routes')).toBeNull()
+    expect(screen.queryByTestId('app-routes')).toBeNull()
   })
 })

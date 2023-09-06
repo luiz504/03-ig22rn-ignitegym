@@ -19,8 +19,9 @@
     "titleBar.inactiveForeground": "#e7e7e799"
   },
   "peacock.color": "#007fff",
-  "cSpell.words": ["dtos", "ignitegym"],
+  "cSpell.words": ["dtos", "FCWC", "ignitegym"],
   "jestrunner.configPath": "./apps/mobile/jest.config.js",
   "jestrunner.jestPath": "./node_modules/jest/bin/jest.js",
-  "jestrunner.jestCommand": "cd apps/mobile && npx jest"
+  "jestrunner.jestCommand": "cd apps/mobile && npx jest",
+  "jestrunner.runOptions": ["--coverage"]
 }

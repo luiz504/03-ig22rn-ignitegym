@@ -29,6 +29,7 @@ export const AuthContext = createContext<AuthContextType>({} as AuthContextType)
 type AuthContextProviderProps = {
   children: React.ReactNode
 }
+
 export const AuthContextProvider: FC<AuthContextProviderProps> = ({
   children,
 }) => {

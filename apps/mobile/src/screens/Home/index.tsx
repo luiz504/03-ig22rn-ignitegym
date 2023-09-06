@@ -10,23 +10,24 @@ import { Skeleton } from '~/components/Skeleton'
 import { AppNavigatorRouteProps } from '~/routes/app.routes'
 
 import { useFetchGroupsQuery } from '~/hooks/useFetchGroupsQuery'
-import { useFetchExercisesByGroup } from '~/hooks/useFetchExercisesByGroupQuery'
+import { useFetchExercisesByGroupQuery } from '~/hooks/useFetchExercisesByGroupQuery'
 
 export const Home: FC = () => {
-  const navigation = useNavigation<AppNavigatorRouteProps>()
-  const handleOpenExerciseDetails = () => {
-    navigation.navigate('exercise')
-  }
   const [groupSelectedIndex, setGroupSelectedIndex] = useState<number>(0)
 
   const { groups, isLoadingGroups } = useFetchGroupsQuery()
 
   const groupsSelectedValue = groups?.[groupSelectedIndex]
 
-  const { exercises, isLoadingExercises } = useFetchExercisesByGroup({
+  const { exercises, isLoadingExercises } = useFetchExercisesByGroupQuery({
     enabled: !!groupsSelectedValue,
     groupName: groupsSelectedValue,
   })
+
+  const navigation = useNavigation<AppNavigatorRouteProps>()
+  const handleOpenExerciseDetails = (id: number) => {
+    navigation.navigate('exercise', { exerciseId: id })
+  }
 
   return (
     <VStack flex={1} testID="home-container">
@@ -88,7 +89,7 @@ export const Home: FC = () => {
             renderItem={({ item }) => (
               <ExerciseCard
                 exercise={item}
-                onPress={handleOpenExerciseDetails}
+                onPress={() => handleOpenExerciseDetails(item.id)}
               />
             )}
             contentContainerStyle={{ gap: 12, paddingBottom: 80 }}
