@@ -3,91 +3,100 @@ import { useNavigation } from '@react-navigation/native'
 import { FlatList, HStack, Heading, Text, VStack } from 'native-base'
 
 import { Header } from './components/Header'
-import { Group } from './components/Group'
-import { ExerciseCard } from './components/ExerciseCard'
+import { Group, GroupSkeleton } from './components/Group'
+import { ExerciseCard, ExerciseCardSkeleton } from './components/ExerciseCard'
+import { Skeleton } from '~/components/Skeleton'
 
 import { AppNavigatorRouteProps } from '~/routes/app.routes'
 
+import { useFetchGroupsQuery } from '~/hooks/useFetchGroupsQuery'
+import { useFetchExercisesByGroupQuery } from '~/hooks/useFetchExercisesByGroupQuery'
+
 export const Home: FC = () => {
-  const [groups] = useState([
-    'back',
-    'Chest',
-    'shoulder',
-    'biceps',
-    'triceps',
-    'quadriceps',
-  ])
+  const [groupSelectedIndex, setGroupSelectedIndex] = useState<number>(0)
 
-  const [groupSelected, setGroupSelected] = useState<string>('back')
+  const { groups, isLoadingGroups } = useFetchGroupsQuery()
 
-  const [exercises] = useState([
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-    'High Row',
-  ])
+  const groupsSelectedValue = groups?.[groupSelectedIndex]
+
+  const { exercises, isLoadingExercises } = useFetchExercisesByGroupQuery({
+    enabled: !!groupsSelectedValue,
+    groupName: groupsSelectedValue,
+  })
+
   const navigation = useNavigation<AppNavigatorRouteProps>()
-  const handleOpenExerciseDetails = () => {
-    navigation.navigate('exercise')
+  const handleOpenExerciseDetails = (id: number) => {
+    navigation.navigate('exercise', { exerciseId: id })
   }
 
   return (
     <VStack flex={1} testID="home-container">
       <Header />
 
-      <FlatList
-        data={groups}
-        keyExtractor={(i) => i}
-        renderItem={({ item }) => (
-          <Group
-            label={item}
-            mr={3}
-            isActive={groupSelected.toLowerCase() === item.toLowerCase()}
-            onPress={() => setGroupSelected(item)}
+      <HStack my={10}>
+        {isLoadingGroups ? (
+          <GroupSkeleton />
+        ) : (
+          <FlatList
+            data={groups}
+            keyExtractor={(i) => i}
+            renderItem={({ item, index }) => (
+              <Group
+                label={item}
+                mr={3}
+                isActive={
+                  groupsSelectedValue?.toLowerCase() === item.toLowerCase()
+                }
+                onPress={() => setGroupSelectedIndex(index)}
+              />
+            )}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            _contentContainerStyle={{
+              px: 8,
+            }}
+            // my={10}
+            flexGrow={0}
           />
         )}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        _contentContainerStyle={{
-          px: 8,
-        }}
-        my={10}
-        flexGrow={0}
-      />
-      <VStack flex={1} px={8}>
-        <HStack justifyContent="space-between" mb={3}>
-          <Heading
-            color="gray.100"
-            fontSize="md"
-            lineHeight="md-160"
-            fontFamily="heading"
-          >
-            Exercises
-          </Heading>
+      </HStack>
 
-          <Text color="gray.100" fontSize="sm" lineHeight="sm-160">
-            {exercises.length}
-          </Text>
-        </HStack>
+      {isLoadingExercises ? (
+        <VStack flex={1} px={8}>
+          <Skeleton.SM h="25.6px" w={20} mb={3} />
+          <ExerciseCardSkeleton />
+        </VStack>
+      ) : (
+        <VStack flex={1} px={8}>
+          <HStack justifyContent="space-between" mb={3}>
+            <Heading
+              color="gray.100"
+              fontSize="md"
+              lineHeight="md-160"
+              fontFamily="heading"
+            >
+              Exercises
+            </Heading>
 
-        <FlatList
-          data={exercises}
-          keyExtractor={(_, i) => String(i)}
-          renderItem={({ item }) => (
-            <ExerciseCard exercise={item} onPress={handleOpenExerciseDetails} />
-          )}
-          contentContainerStyle={{ gap: 12, paddingBottom: 80 }}
-          showsVerticalScrollIndicator={false}
-        />
-      </VStack>
+            <Text color="gray.100" fontSize="sm" lineHeight="sm-160">
+              {exercises?.length}
+            </Text>
+          </HStack>
+
+          <FlatList
+            data={exercises}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+              <ExerciseCard
+                exercise={item}
+                onPress={() => handleOpenExerciseDetails(item.id)}
+              />
+            )}
+            contentContainerStyle={{ gap: 12, paddingBottom: 80 }}
+            showsVerticalScrollIndicator={false}
+          />
+        </VStack>
+      )}
     </VStack>
   )
 }

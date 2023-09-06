@@ -25,6 +25,13 @@ const routes = require("./routes");
 app.use(express.json());
 app.use(cors());
 
+const delayMiddleware = (delay) => {
+  return (req, res, next)=> {
+    setTimeout(()=>next(), delay)
+  }
+}
+app.use(delayMiddleware(500))
+
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use(routes);

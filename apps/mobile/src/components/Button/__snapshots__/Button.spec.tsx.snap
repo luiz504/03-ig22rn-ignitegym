@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button Component should render correctly default variant "outline": btn-outline-label-style 1`] = `
+{
+  "backgroundColor": undefined,
+  "color": "#00B37E",
+  "fontFamily": "Roboto-Bold",
+  "fontSize": 16,
+  "fontStyle": "normal",
+  "fontWeight": "400",
+  "letterSpacing": 0,
+  "lineHeight": 24,
+  "textDecorationLine": undefined,
+}
+`;
+
+exports[`Button Component should render correctly default variant "outline": btn-outline-style 1`] = `
+{
+  "alignItems": "center",
+  "backgroundColor": "transparent",
+  "borderColor": "#00B37E",
+  "borderRadius": 4,
+  "borderWidth": 1.5,
+  "flexDirection": "row",
+  "height": 56,
+  "justifyContent": "center",
+  "paddingBottom": 10,
+  "paddingLeft": 12,
+  "paddingRight": 12,
+  "paddingTop": 10,
+  "width": "100%",
+}
+`;
+
+exports[`Button Component should render correctly default variant "solid": btn-solid-label-style 1`] = `
+{
+  "backgroundColor": undefined,
+  "color": "#FFFFFF",
+  "fontFamily": "Roboto-Bold",
+  "fontSize": 16,
+  "fontStyle": "normal",
+  "fontWeight": "400",
+  "letterSpacing": 0,
+  "lineHeight": 24,
+  "textDecorationLine": undefined,
+}
+`;
+
+exports[`Button Component should render correctly default variant "solid": btn-solid-style 1`] = `
+{
+  "alignItems": "center",
+  "backgroundColor": "#00875F",
+  "borderColor": "#00875F",
+  "borderRadius": 4,
+  "borderWidth": 1.5,
+  "flexDirection": "row",
+  "height": 56,
+  "justifyContent": "center",
+  "paddingBottom": 10,
+  "paddingLeft": 12,
+  "paddingRight": 12,
+  "paddingTop": 10,
+  "width": "100%",
+}
+`;

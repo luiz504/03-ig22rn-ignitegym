@@ -6,19 +6,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { AuthContext, AuthContextProvider } from '.'
 import { AppError } from '~/utils/AppError'
 import { api } from '~/libs/axios'
-import { MockedToken, MockedUser } from '~/utils/test/test-hooks'
+
 import * as StoreUserModule from '~/storage/user'
 import * as StoreAuthModule from '~/storage/auth'
+import { MockedUser } from '~/utils/test'
 
 describe('AuthContext', () => {
   beforeEach(async () => {
     await AsyncStorage.clear()
   })
-
+  const MockedToken = 'someToken'
   describe('loadUserStoredData effect', () => {
     it('should load the stored userData and handle the loading state', async () => {
-      const MockedToken = 'someToken'
-
       jest
         .spyOn(StoreUserModule, 'storageUserGet')
         .mockResolvedValue(MockedUser)

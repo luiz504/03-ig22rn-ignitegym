@@ -1,5 +1,6 @@
-import { IPressableProps, Pressable, Text } from 'native-base'
+import { HStack, IPressableProps, Pressable, Text } from 'native-base'
 import { FC } from 'react'
+import { Skeleton } from '~/components/Skeleton'
 
 interface GroupProps extends IPressableProps {
   label: string
@@ -33,3 +34,17 @@ export const Group: FC<GroupProps> = ({ label, isActive = false, ...rest }) => {
     </Pressable>
   )
 }
+
+export const GroupSkeleton = () => (
+  <HStack
+    bg="gray.600"
+    ml={8}
+    rounded="md"
+    w={100}
+    p={3}
+    borderWidth={1.5}
+    borderColor="gray.600"
+  >
+    <Skeleton.SM h="19.2px" />
+  </HStack>
+)

@@ -1,12 +1,28 @@
 import { render, screen, waitFor } from '@testing-library/react-native'
-import App from './App'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
+
+import { MockComponent } from '~/utils/test'
+
+import App from './App'
 
 jest.mock('expo-font', () => ({
   ...jest.requireActual('expo-font'),
 }))
 jest.mock('expo-splash-screen')
+
+jest.mock('~/routes', () => {
+  return {
+    Routes: (props: any) => MockComponent({ ...props, testID: 'app-routes' }),
+  }
+})
+
+jest.mock('~/contexts/AuthContext', () => {
+  return {
+    AuthContextProvider: (props: any) =>
+      MockComponent({ ...props, testID: 'auth-provider' }),
+  }
+})
 describe('App init file', () => {
   beforeEach(() => {
     jest.clearAllMocks()

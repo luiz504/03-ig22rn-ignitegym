@@ -9,10 +9,11 @@ import {
   screen,
   waitFor,
 } from '~/utils/test/test-utils'
-import { useAuthSpy } from '~/utils/test/test-hooks'
+
 import { AppError } from '~/utils/AppError'
 
 import { SignIn } from '.'
+import { useAuthContextSpy } from '~/utils/test'
 
 jest.mock('react-hook-form', () => ({
   ...jest.requireActual('react-hook-form'),
@@ -32,9 +33,9 @@ describe('SignIn Component', () => {
   const elementsIDs = {
     inputEmail: 'input-email',
     inputPassword: 'input-password',
-
     btnSubmit: 'btn-submit',
   }
+
   const useNavigationMock = () => {
     const navigate = jest.fn()
     jest.mocked(useNavigation).mockReturnValue({ navigate } as any)
@@ -52,66 +53,70 @@ describe('SignIn Component', () => {
   }
 
   beforeEach(() => {
-    useAuthSpy()
     useNavigationMock()
     jest.clearAllMocks()
   })
-  it('should call Keyboard.dismiss when click on the screen background', async () => {
-    const keyboardSpy = jest.spyOn(Keyboard, 'dismiss')
+  describe('forms and links side effects', () => {
+    beforeEach(() => {
+      useAuthContextSpy()
+    })
+    it('should call Keyboard.dismiss when click on the screen background', async () => {
+      const keyboardSpy = jest.spyOn(Keyboard, 'dismiss')
 
-    const three = renderWithAllProviders(<SignIn />).toJSON()
-    await waitFor(() => expect(three).toBeTruthy())
+      const three = renderWithAllProviders(<SignIn />).toJSON()
+      await waitFor(() => expect(three).toBeTruthy())
 
-    const backgroundView = screen.getByTestId('background-view')
+      const backgroundView = screen.getByTestId('background-view')
 
-    fireEvent.press(backgroundView)
+      fireEvent.press(backgroundView)
 
-    await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
-  })
-
-  it('should handle click btn "signUp" screen correctly', async () => {
-    const { navigate } = useNavigationMock()
-    const { keyboardSpy } = useKeyboardSpy()
-
-    const three = renderWithAllProviders(<SignIn />).toJSON()
-    await waitFor(() => expect(three).toBeTruthy())
-
-    const signUpBtn = screen.getByTestId('btn-sign-up')
-
-    fireEvent.press(signUpBtn)
-
-    await waitFor(() => expect(navigate).toBeCalledWith('signUp'))
-    await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
-  })
-
-  it('should trigger setFocus to next input until trigger submit', async () => {
-    const setFocusMock = jest.fn()
-    const handleSubmitMock = jest.fn()
-
-    const mockUseForm = jest.fn(() => {
-      const hook = useForm()
-      return {
-        ...hook,
-        setFocus: setFocusMock,
-        handleSubmit: handleSubmitMock,
-      } as ReturnType<typeof useForm>
+      await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
     })
 
-    const userFormMock = jest
-      .spyOn(RHF, 'useForm')
-      .mockImplementation(mockUseForm)
+    it('should handle click btn "signUp" navigates to screen SignUp correctly', async () => {
+      const { navigate } = useNavigationMock()
+      const { keyboardSpy } = useKeyboardSpy()
 
-    const three = renderWithAllProviders(<SignIn />).toJSON()
-    await waitFor(() => expect(three).toBeTruthy())
+      const three = renderWithAllProviders(<SignIn />).toJSON()
+      await waitFor(() => expect(three).toBeTruthy())
 
-    // Name Act
-    const inputNameElem = screen.getByTestId(elementsIDs.inputEmail)
+      const signUpBtn = screen.getByTestId('btn-sign-up')
 
-    fireEvent(inputNameElem, 'onSubmitEditing')
+      fireEvent.press(signUpBtn)
 
-    await waitFor(() => expect(setFocusMock).toBeCalledWith('password'))
+      await waitFor(() => expect(navigate).toBeCalledWith('signUp'))
+      await waitFor(() => expect(keyboardSpy).toBeCalledTimes(1))
+    })
 
-    userFormMock.mockRestore()
+    it('should trigger setFocus to next input until trigger submit', async () => {
+      const setFocusMock = jest.fn()
+      const handleSubmitMock = jest.fn()
+
+      const mockUseForm = jest.fn(() => {
+        const hook = useForm()
+        return {
+          ...hook,
+          setFocus: setFocusMock,
+          handleSubmit: handleSubmitMock,
+        } as ReturnType<typeof useForm>
+      })
+
+      const userFormMock = jest
+        .spyOn(RHF, 'useForm')
+        .mockImplementation(mockUseForm)
+
+      const three = renderWithAllProviders(<SignIn />).toJSON()
+      await waitFor(() => expect(three).toBeTruthy())
+
+      // Name Act
+      const inputNameElem = screen.getByTestId(elementsIDs.inputEmail)
+
+      fireEvent(inputNameElem, 'onSubmitEditing')
+
+      await waitFor(() => expect(setFocusMock).toBeCalledWith('password'))
+
+      userFormMock.mockRestore()
+    })
   })
 
   describe('handleClickSignIn', () => {
@@ -128,7 +133,7 @@ describe('SignIn Component', () => {
       fireEvent.press(screen.getByTestId('btn-submit'))
     }
     it('should handle signIn correctly', async () => {
-      const { signInMock } = useAuthSpy()
+      const { signInMock } = useAuthContextSpy()
       const { show } = useToastShowSpy()
 
       renderWithAllProviders(<SignIn />)
@@ -141,7 +146,7 @@ describe('SignIn Component', () => {
     })
 
     it('should trigger an toast error if occur an AppError', async () => {
-      const { signInMock } = useAuthSpy()
+      const { signInMock } = useAuthContextSpy()
       const errorMSG = 'Some Error Message'
       signInMock.mockRejectedValue(new AppError(errorMSG))
 
@@ -161,7 +166,7 @@ describe('SignIn Component', () => {
       )
     })
     it('should trigger an toast error if occur a Generic Error', async () => {
-      const { signInMock } = useAuthSpy()
+      const { signInMock } = useAuthContextSpy()
 
       signInMock.mockRejectedValue(new Error('some generic error'))
 

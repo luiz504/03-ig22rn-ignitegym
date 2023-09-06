@@ -1,22 +1,31 @@
-import {
-  MockedToken,
-  MockedUser,
-  useAuthSpyShallow,
-} from '~/utils/test/test-hooks'
+import { View } from 'react-native'
+
 import {
   cleanup,
   renderWithAllProviders,
   screen,
 } from '~/utils/test/test-utils'
+import { MockedUser, useAuthContextSpy } from '~/utils/test'
 
 import { THEME } from '~/theme'
 import { AppRoutes } from './app.routes'
 
+const Home = () => <View testID="home2-container" />
+jest.mock('~/screens/Home', () => {
+  return {
+    Home,
+  }
+})
 describe('App Router', () => {
-  it('should render correctly', async () => {
-    useAuthSpyShallow({ user: MockedUser, token: MockedToken })
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+  it('should render the Navigation Tabs correctly, and the correct initial Screen', async () => {
+    useAuthContextSpy({ user: MockedUser })
 
     renderWithAllProviders(<AppRoutes />)
+
+    expect(screen.getByTestId('home2-container')).toBeTruthy()
 
     const baseProps = {
       height: 24,
@@ -27,18 +36,18 @@ describe('App Router', () => {
       1: { ...baseProps, fill: THEME.colors.gray[200] },
     }
 
-    const homeIcon = screen.getAllByTestId('home-icon')
+    const homeIcons = screen.getAllByTestId('home-icon')
 
-    homeIcon.forEach((item, index) =>
+    homeIcons.forEach(async (item, index) =>
       expect(item.props).toEqual(
         expect.objectContaining(
           iconPropsDict[index as keyof typeof iconPropsDict],
         ),
       ),
     )
-    const historyIcon = screen.getAllByTestId('history-icon')
+    const historyIcons = screen.getAllByTestId('history-icon')
 
-    historyIcon.forEach((item, index) =>
+    historyIcons.forEach((item, index) =>
       expect(item.props).toEqual(
         expect.objectContaining(
           iconPropsDict[index as keyof typeof iconPropsDict],
@@ -46,15 +55,16 @@ describe('App Router', () => {
       ),
     )
 
-    const profileIcon = screen.getAllByTestId('profile-icon')
+    const profileIcons = screen.getAllByTestId('profile-icon')
 
-    profileIcon.forEach((item, index) =>
+    profileIcons.forEach((item, index) =>
       expect(item.props).toEqual(
         expect.objectContaining(
           iconPropsDict[index as keyof typeof iconPropsDict],
         ),
       ),
     )
+
     cleanup()
   })
 })
