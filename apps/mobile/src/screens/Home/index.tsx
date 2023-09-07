@@ -35,7 +35,7 @@ export const Home: FC = () => {
 
       <HStack my={10}>
         {isLoadingGroups ? (
-          <GroupSkeleton />
+          <GroupSkeleton testID="group-skeleton" />
         ) : (
           <FlatList
             data={groups}
@@ -44,10 +44,11 @@ export const Home: FC = () => {
               <Group
                 label={item}
                 mr={3}
-                isActive={
+                aria-selected={
                   groupsSelectedValue?.toLowerCase() === item.toLowerCase()
                 }
                 onPress={() => setGroupSelectedIndex(index)}
+                testID={`group-card-${item}`}
               />
             )}
             horizontal
@@ -62,7 +63,7 @@ export const Home: FC = () => {
       </HStack>
 
       {isLoadingExercises ? (
-        <VStack flex={1} px={8}>
+        <VStack flex={1} px={8} testID="exercises-skeleton">
           <Skeleton.SM h="25.6px" w={20} mb={3} />
           <ExerciseCardSkeleton />
         </VStack>
@@ -90,6 +91,7 @@ export const Home: FC = () => {
               <ExerciseCard
                 exercise={item}
                 onPress={() => handleOpenExerciseDetails(item.id)}
+                testID={`exercise-card-${item.id}`}
               />
             )}
             contentContainerStyle={{ gap: 12, paddingBottom: 80 }}
