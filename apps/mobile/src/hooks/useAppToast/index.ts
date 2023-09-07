@@ -8,5 +8,8 @@ export const useAppToast = () => {
   const showError = ({ ...props }: IToastProps) =>
     toast.show({ placement, bg: 'red.500', ...props })
 
-  return { showError }
+  const showSuccess = ({ ...props }: IToastProps) =>
+    toast.show({ placement, bg: 'green.700', ...props })
+
+  return { showError, showSuccess }
 }
