@@ -36,7 +36,9 @@ describe('useFetchGroupsQuery', () => {
       .mockRejectedValue(new Error('Some Error'))
 
     const showError = jest.fn()
-    jest.spyOn(ModUseAppToast, 'useAppToast').mockReturnValue({ showError })
+    jest
+      .spyOn(ModUseAppToast, 'useAppToast')
+      .mockReturnValue({ showError } as any)
 
     const { result } = renderHook(() => useFetchGroupsQuery(), {
       wrapper: NBQueryNavProviders,

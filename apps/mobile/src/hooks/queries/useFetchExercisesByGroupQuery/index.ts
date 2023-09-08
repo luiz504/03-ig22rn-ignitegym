@@ -4,8 +4,8 @@ import { api } from '~/libs/axios'
 
 import { resolveErrorMessage } from '~/utils/AppError'
 
-import { useRefreshOnFocus } from '../useRefreshOnFocus'
-import { useAppToast } from '../useAppToast'
+import { useAppToast } from '~/hooks/useAppToast'
+import { useRefreshOnFocus } from '~/hooks/useRefreshOnFocus'
 
 import { ExerciseDTO } from '~/dtos/ExerciseDTO'
 export const useFetchExercisesByGroupQuery = ({

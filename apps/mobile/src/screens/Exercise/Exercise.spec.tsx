@@ -8,7 +8,7 @@ import {
 } from '~/utils/test/test-utils'
 import { MockedExercise, MockedUser, useAuthContextSpy } from '~/utils/test'
 
-import * as FetchExerciseModule from '~/hooks/useFetchExerciseDetailsQuery'
+import * as FetchExerciseModule from '~/hooks/queries/useFetchExerciseDetailsQuery'
 
 import { Exercise } from '.'
 import { api } from '~/libs/axios'

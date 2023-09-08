@@ -9,8 +9,8 @@ import { Skeleton } from '~/components/Skeleton'
 
 import { AppNavigatorRouteProps } from '~/routes/app.routes'
 
-import { useFetchGroupsQuery } from '~/hooks/useFetchGroupsQuery'
-import { useFetchExercisesByGroupQuery } from '~/hooks/useFetchExercisesByGroupQuery'
+import { useFetchGroupsQuery } from '~/hooks/queries/useFetchGroupsQuery'
+import { useFetchExercisesByGroupQuery } from '~/hooks/queries/useFetchExercisesByGroupQuery'
 
 export const Home: FC = () => {
   const [groupSelectedIndex, setGroupSelectedIndex] = useState<number>(0)

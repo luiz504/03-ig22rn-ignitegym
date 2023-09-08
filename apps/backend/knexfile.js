@@ -1,6 +1,8 @@
 const path = require("path");
 
-module.exports = {
+
+/** @type {import('knex').Knex.Config} */
+const config = {  
   development: {
     client: "sqlite3",
     connection: {
@@ -12,6 +14,8 @@ module.exports = {
     seeds: {
       directory: path.resolve(__dirname, "src", "database", "seeds")
     },
-    useNullAsDefault: true
+    useNullAsDefault: true,      
   }
 };
+
+module.exports = config

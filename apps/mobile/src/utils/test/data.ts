@@ -1,4 +1,5 @@
 import { ExerciseDTO } from '~/dtos/ExerciseDTO'
+import { HistoryByDayDTO } from '~/dtos/HistoryByDayDTO'
 import { UserDTO } from '~/dtos/UserDTO'
 
 export const MockedUser: UserDTO = {
@@ -54,3 +55,39 @@ export const MockedExercises: ExerciseDTO[] = [
     thumb: 'fake-thumb-url-3',
   },
 ]
+
+export const MockedHistoriesByDay: HistoryByDayDTO[] = [
+  {
+    title: '07.10.2023',
+    data: [
+      {
+        id: 12,
+        name: 'Rosca punho',
+        group: 'antebraço',
+        created_at: '2023-09-07 14:55:15',
+        hour: '14:55',
+      },
+      {
+        id: 11,
+        name: 'Rosca deitada',
+        group: 'antebraço',
+        created_at: '2023-09-07 14:45:15',
+        hour: '14:55',
+      },
+    ],
+  },
+  {
+    title: '07.09.2023',
+    data: [
+      {
+        id: 13,
+        name: 'Rosca direta',
+        group: 'antebraço',
+        created_at: '2023-09-07 15:00:15',
+        hour: '15:00',
+      },
+    ],
+  },
+]
+
+export const MockedHistory = MockedHistoriesByDay[0].data[0]

@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  backend:
+    build: 
+      context: .
+      dockerfile: DockerFile
+    image: ignite-gyn:backend
+    ports: 
+      - "3333:3333"
+    environment:
+      - TZ=UTC
+  
+    

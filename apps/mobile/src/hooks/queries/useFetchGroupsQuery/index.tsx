@@ -4,7 +4,7 @@ import { api } from '~/libs/axios'
 
 import { resolveErrorMessage } from '~/utils/AppError'
 
-import { useAppToast } from '../useAppToast'
+import { useAppToast } from '../../useAppToast'
 
 export const useFetchGroupsQuery = () => {
   const toast = useAppToast()

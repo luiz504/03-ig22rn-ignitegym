@@ -5,8 +5,8 @@ import {
   waitFor,
 } from '~/utils/test/test-utils'
 import { Home } from '.'
-import * as UseFetchGroupsModule from '~/hooks/useFetchGroupsQuery'
-import * as UseFetchExercisesModule from '~/hooks/useFetchExercisesByGroupQuery'
+import * as UseFetchGroupsModule from '~/hooks/queries/useFetchGroupsQuery'
+import * as UseFetchExercisesModule from '~/hooks/queries/useFetchExercisesByGroupQuery'
 
 import {
   MockedExercises,

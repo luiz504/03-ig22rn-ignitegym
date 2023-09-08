@@ -14,7 +14,8 @@ const config = {
     '!**/*.d.ts',
     '!**/utils/test/**',
     '!**/constants/**',
-    '!**/dtos/**'
+    '!**/dtos/**',
+    '!**/libs/query-client.ts'
   ],
  
   moduleNameMapper: {

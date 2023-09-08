@@ -5,7 +5,7 @@ import { Box, HStack, Image, ScrollView, Text, VStack } from 'native-base'
 import RepetitionIcon from '~/assets/icons/repetitions.svg'
 import SeriesIcon from '~/assets/icons/series.svg'
 
-import { useFetchExerciseDetailsQuery } from '~/hooks/useFetchExerciseDetailsQuery'
+import { useFetchExerciseDetailsQuery } from '~/hooks/queries/useFetchExerciseDetailsQuery'
 
 import { api } from '~/libs/axios'
 
