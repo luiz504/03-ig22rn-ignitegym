@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { getDefaultConfig } = require('expo/metro-config')
 const path = require('path')
 
 module.exports = (() => {
   const projectRoot = __dirname
-  const workspaceRoot = path.resolve(__dirname,'../..')
+  const workspaceRoot = path.resolve(__dirname, '../..')
   const config = getDefaultConfig(__dirname)
 
   const { transformer, resolver } = config
@@ -21,7 +22,7 @@ module.exports = (() => {
       path.resolve(projectRoot, 'node_modules'),
       path.resolve(workspaceRoot, 'node_modules'),
     ],
-    disableHierarchicalLookup: true
+    disableHierarchicalLookup: true,
   }
 
   return config

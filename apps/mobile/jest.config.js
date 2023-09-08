@@ -1,3 +1,5 @@
+process.env.TZ = 'UTC'
+
 /** @type {import('jest').Config} */
 const config = {
   preset: 'jest-expo',
@@ -15,14 +17,15 @@ const config = {
     '!**/utils/test/**',
     '!**/constants/**',
     '!**/dtos/**',
-    '!**/libs/query-client.ts'
+    '!**/libs/query-client.ts',
   ],
- 
+
   moduleNameMapper: {
-    '^~/(.*)$': '<rootDir>/src/$1', 
-    "^__mocks__/(.*)$": "<rootDir>/__mocks__/$1",
-    "\\.svg": "<rootDir>/__mocks__/svgMock.js"
+    '^~/(.*)$': '<rootDir>/src/$1',
+    '^__mocks__/(.*)$': '<rootDir>/__mocks__/$1',
+    '\\.svg': '<rootDir>/__mocks__/svgMock.js',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 }
+
 module.exports = config

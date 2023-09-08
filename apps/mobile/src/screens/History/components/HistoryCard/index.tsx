@@ -1,6 +1,9 @@
 import { FC } from 'react'
 import { HStack, Heading, Text, VStack } from 'native-base'
 import { IHStackProps } from 'native-base/lib/typescript/components/primitives/Stack/HStack'
+import { format } from 'date-fns'
+
+import { convertUTCToLocalTime } from '~/utils/convertUTCToLocalTime.ts'
 
 import { Skeleton } from '~/components/Skeleton'
 
@@ -10,6 +13,8 @@ interface HistoryCardProps extends IHStackProps {
 }
 
 export const HistoryCard: FC<HistoryCardProps> = ({ data, ...rest }) => {
+  const hour = format(convertUTCToLocalTime(data.created_at), 'HH:mm')
+
   return (
     <HStack
       bg="gray.600"
@@ -42,7 +47,7 @@ export const HistoryCard: FC<HistoryCardProps> = ({ data, ...rest }) => {
       </VStack>
 
       <Text color="gray.300" fontSize="md" lineHeight="md-160">
-        {data.hour}
+        {hour}
       </Text>
     </HStack>
   )
