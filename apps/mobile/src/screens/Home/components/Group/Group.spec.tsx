@@ -1,9 +1,10 @@
 import {
   fireEvent,
   renderWithNBNavProviders,
+  renderWithNBProviders,
   screen,
 } from '~/utils/test/test-utils'
-import { Group } from '.'
+import { Group, GroupSkeleton } from '.'
 import { THEME } from '~/theme'
 
 describe('Group Component', () => {
@@ -29,7 +30,7 @@ describe('Group Component', () => {
   it('should render correctly isActive=true', () => {
     const label = 'Btn Non Selected'
     renderWithNBNavProviders(
-      <Group label={label} testID={btnGroupID} isActive />,
+      <Group label={label} testID={btnGroupID} aria-selected />,
     )
 
     const btnGroupElement = screen.getByTestId(btnGroupID)
@@ -37,5 +38,15 @@ describe('Group Component', () => {
 
     expect(btnGroupElement.props.style).toMatchSnapshot('btn-active:style')
     expect(textElement.props.style).toMatchSnapshot('btn-active-text:style')
+  })
+})
+
+describe('Group Skeleton Component', () => {
+  it('should render correctly', () => {
+    jest.useFakeTimers()
+    renderWithNBProviders(<GroupSkeleton testID="skeleton-container" />)
+    expect(screen.getByTestId('skeleton-container')).toBeTruthy()
+
+    jest.clearAllTimers()
   })
 })

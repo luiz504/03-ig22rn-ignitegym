@@ -31,4 +31,29 @@ describe('useAppToast', () => {
       })
     })
   })
+
+  describe('showSuccess', () => {
+    it('should open the toast with the correct message', () => {
+      const showMock = jest.fn()
+      jest
+        .spyOn(NBCompositesModule, 'useToast')
+        .mockReturnValue({ show: showMock } as any)
+
+      const { result } = renderHook(() => useAppToast())
+
+      const title = 'Title'
+      const description = 'Description'
+
+      // act
+      result.current.showSuccess({ title, description })
+
+      expect(showMock).toBeCalledTimes(1)
+      expect(showMock).toBeCalledWith({
+        placement: 'top',
+        bg: 'green.700',
+        description,
+        title,
+      })
+    })
+  })
 })

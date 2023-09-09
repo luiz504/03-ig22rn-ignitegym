@@ -6,6 +6,7 @@ import ExitIcon from '~/assets/icons/exit.svg'
 
 import { UserPhoto } from '~/components/UserPhoto'
 import { useAuth } from '~/hooks/useAuth'
+import { api } from '~/libs/axios'
 
 export const Header: FC = () => {
   const theme = useTheme()
@@ -16,7 +17,9 @@ export const Header: FC = () => {
     signOut()
   }
 
-  const avatarSource = user?.avatar ? { uri: user.avatar } : DefaultPhoto
+  const avatarSource = user?.avatar
+    ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+    : DefaultPhoto
 
   return (
     <HStack pt={16} pb={5} px={8} alignItems="center" bg="gray.600">

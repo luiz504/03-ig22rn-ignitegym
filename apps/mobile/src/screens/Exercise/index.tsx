@@ -1,17 +1,19 @@
 import { FC } from 'react'
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { Box, HStack, Image, ScrollView, Text, VStack } from 'native-base'
 
 import RepetitionIcon from '~/assets/icons/repetitions.svg'
 import SeriesIcon from '~/assets/icons/series.svg'
 
-import { useFetchExerciseDetailsQuery } from '~/hooks/useFetchExerciseDetailsQuery'
+import { useFetchExerciseDetailsQuery } from '~/hooks/queries/useFetchExerciseDetailsQuery'
 
 import { api } from '~/libs/axios'
 
 import { Header, HeaderSkeleton } from './components/Header'
 import { Button } from '~/components/Button'
 import { Skeleton } from '~/components/Skeleton'
+import { AppNavigatorRouteProps } from '~/routes/app.routes'
+import { useExerciseHistoryMutation } from '~/hooks/mutations/useExerciseHistoryMutation'
 
 type RouteParams = {
   exerciseId: number
@@ -19,10 +21,19 @@ type RouteParams = {
 
 export const Exercise: FC = () => {
   const { exerciseId } = useRoute().params as RouteParams
+  const navigator = useNavigation<AppNavigatorRouteProps>()
 
   const { exercise, isLoading } = useFetchExerciseDetailsQuery({ exerciseId })
 
   const showSkeleton = !exercise || isLoading
+
+  const { mutateAsync, isLoading: isRegistering } = useExerciseHistoryMutation()
+
+  const handleExerciseHistoryRegister = async () => {
+    await mutateAsync({ exerciseId }).then(() => {
+      navigator.navigate('history')
+    })
+  }
 
   return (
     <VStack flex={1}>
@@ -79,7 +90,12 @@ export const Exercise: FC = () => {
               </HStack>
             </HStack>
 
-            <Button label="Check as done" disabled={isLoading} />
+            <Button
+              label="Check as done"
+              isLoading={isLoading || isRegistering}
+              onPress={handleExerciseHistoryRegister}
+              testID="btn-register"
+            />
           </Box>
         </VStack>
       </ScrollView>

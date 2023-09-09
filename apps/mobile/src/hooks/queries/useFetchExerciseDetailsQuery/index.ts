@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 
 import { api } from '~/libs/axios'
 
-import { handleErrorMessage } from '~/utils/AppError'
+import { resolveErrorMessage } from '~/utils/AppError'
 
-import { useRefreshOnFocus } from '../useRefreshOnFocus'
-import { useAppToast } from '../useAppToast'
+import { useAppToast } from '~/hooks/useAppToast'
+import { useRefreshOnFocus } from '~/hooks/useRefreshOnFocus'
 
 import { ExerciseDTO } from '~/dtos/ExerciseDTO'
 export const useFetchExerciseDetailsQuery = ({
@@ -27,7 +27,7 @@ export const useFetchExerciseDetailsQuery = ({
         return response.data as ExerciseDTO
       } catch (err) {
         toast.showError({
-          title: handleErrorMessage(err, 'Fail to load Exercise Details.'),
+          title: resolveErrorMessage(err, 'Fail to load Exercise Details.'),
         })
 
         throw err

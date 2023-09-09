@@ -1,27 +1,66 @@
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { Box, Center, Heading, Text, VStack } from 'native-base'
-import { useToast } from 'native-base/src/components/composites/Toast'
 import { ScrollView, TouchableOpacity } from 'react-native'
+import { Controller, useForm } from 'react-hook-form'
 import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+import DefaultPhoto from '~/assets/images/userPhotoDefault.png'
+
+import { useAuth } from '~/hooks/useAuth'
+import { usePutUserProfileMutation } from '~/hooks/mutations/usePutUserProfileMutation'
+import { useAppToast } from '~/hooks/useAppToast'
+import { usePatchUserProfileAvatar } from '~/hooks/mutations/usePatchUserProfileAvatar'
+
+import { api } from '~/libs/axios'
 
 import { Header } from '~/components/Header'
 import { UserPhoto } from '~/components/UserPhoto'
 import { Input } from '~/components/Input'
 import { Button } from '~/components/Button'
 
+import { FormProfileType, formProfileSchema } from './formSchema'
+
 const PHOTO_SIZE = 33
 
 export const Profile: FC = () => {
+  const { user, updateUserProfile } = useAuth()
   const [isLoadingPhoto, setIsLoadingPhoto] = useState(false)
-  const [userPhoto, setUserPhoto] = useState('https://github.com/luiz504.png')
+  const [userPhoto, setUserPhoto] = useState<string | null>(null)
 
-  const toast = useToast()
+  const avatarSource = useMemo(() => {
+    if (!userPhoto) {
+      return user?.avatar
+        ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+        : DefaultPhoto
+    }
+    return { uri: userPhoto }
+  }, [user, userPhoto])
 
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    clearErrors,
+    setFocus,
+    setValue,
+    formState: { errors },
+  } = useForm<FormProfileType>({
+    resolver: zodResolver(formProfileSchema),
+    resetOptions: { keepDirty: false, keepErrors: false },
+    defaultValues: {
+      name: user?.name,
+    },
+  })
+  const { mutateAsync: mutateAvatar, isLoading: isUploading } =
+    usePatchUserProfileAvatar()
+  //* Image Handlers
   const handleUserPhotoSelect = async () => {
+    if (!user) return
     try {
       setIsLoadingPhoto(true)
-      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+      const photosSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
         aspect: [4, 4],
@@ -29,35 +68,99 @@ export const Profile: FC = () => {
         allowsMultipleSelection: false,
       })
 
-      if (photoSelected.canceled || !photoSelected.assets[0].uri) {
+      if (photosSelected.canceled || !photosSelected.assets[0].uri) {
         return
       }
+      const photoSelected = photosSelected.assets[0]
 
-      const photoInfo = await FileSystem.getInfoAsync(
-        photoSelected.assets[0].uri,
-      )
+      const photoInfo = await FileSystem.getInfoAsync(photoSelected.uri)
 
       if (photoInfo.exists && !photoInfo.isDirectory) {
         if (photoInfo.size / 1024 / 1024 > 5) {
-          return toast.show({
-            placement: 'top',
-            bg: 'red.500',
+          return toast.showError({
             title: 'Change Photo Error',
             description:
               'This photo is too large. Please select one with max size of 5mb.',
           })
         }
-        setUserPhoto(photoSelected.assets[0].uri)
+
+        const fileExtension = photoSelected.uri.split('.').pop()
+
+        const photoFile = {
+          name: `${user?.name}.${fileExtension}`.toLowerCase(),
+          uri: photoSelected.uri,
+          type: `${photoSelected.type}/${fileExtension}`,
+        }
+        setUserPhoto(photoSelected.uri)
+
+        const response = await mutateAvatar(photoFile)
+
+        const updatedUser = user
+        updatedUser.avatar = response.avatar
+        await updateUserProfile(updatedUser)
       }
     } catch (err) {
-      toast.show({
-        placement: 'top',
-        bg: 'red.500',
+      setUserPhoto(null)
+      toast.showError({
         title: 'Change Photo Error',
         description: 'Something went wrong, try again later',
       })
     } finally {
       setIsLoadingPhoto(false)
+    }
+  }
+
+  //* Inputs Blur handlers
+  const handlePwFieldBlur = () => {
+    const { confirmPassword, currentPassword, newPassword } = getValues()
+
+    if (!confirmPassword && !currentPassword && !newPassword) {
+      clearErrors(['currentPassword', 'newPassword', 'confirmPassword'])
+    }
+  }
+
+  const handleNameInputBlur = (value: string) => {
+    const trimmedValue = value.trim()
+
+    if (!trimmedValue) {
+      setValue('name', user?.name as string)
+      clearErrors(['name'])
+    } else {
+      setValue('name', trimmedValue)
+    }
+  }
+
+  //* Submit handlers
+  const { mutateAsync, isLoading: isUpdating } = usePutUserProfileMutation()
+  const toast = useAppToast()
+
+  const handleUpdateProfile = async (data: FormProfileType) => {
+    if (!user) return // Compiler Gymnastics
+
+    const nameHasChanged = data.name !== user?.name
+    const pwHasChanged = data.newPassword !== data.currentPassword
+    const pwExistsAndIsTheSame = !!data.newPassword && pwHasChanged
+
+    if (nameHasChanged || pwHasChanged) {
+      await mutateAsync({
+        name: data.name,
+        old_password: data.currentPassword,
+        password: data.newPassword,
+      })
+      if (pwHasChanged) {
+        setValue('currentPassword', '')
+        setValue('newPassword', '')
+        setValue('confirmPassword', '')
+      }
+      if (nameHasChanged) {
+        const userUpdated = user
+        userUpdated.name = data.name
+        await updateUserProfile(userUpdated)
+      }
+    }
+    if (pwExistsAndIsTheSame) {
+      toast.showError({ title: 'Old password provided equals new password.' })
+      setFocus('currentPassword')
     }
   }
 
@@ -70,13 +173,13 @@ export const Profile: FC = () => {
           <Box position={'relative'}>
             <UserPhoto
               size={PHOTO_SIZE}
-              source={{ uri: userPhoto }}
+              source={avatarSource}
               alt="User Photo"
               testID="img-user-photo"
             />
           </Box>
 
-          <TouchableOpacity>
+          <TouchableOpacity disabled={isUploading}>
             <Text
               color="green.500"
               fontFamily="heading"
@@ -89,8 +192,31 @@ export const Profile: FC = () => {
             </Text>
           </TouchableOpacity>
 
-          <Input mt={8} placeholder="Name" bg="gray.600" />
-          <Input mt={4} placeholder="E-mail" bg="gray.600" isDisabled />
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, ref, value } }) => (
+              <Input
+                ref={ref}
+                placeholder="Name"
+                value={value}
+                onChangeText={onChange}
+                onBlur={() => handleNameInputBlur(value)}
+                errorMsg={errors.name?.message}
+                _container={{ mt: 8 }}
+                bg="gray.600"
+                testID="input-name"
+              />
+            )}
+          />
+
+          <Input
+            mt={4}
+            placeholder="E-mail"
+            bg="gray.600"
+            defaultValue={user?.email}
+            isDisabled
+          />
 
           <Heading
             color="gray.200"
@@ -103,27 +229,72 @@ export const Profile: FC = () => {
             Change Password
           </Heading>
 
-          <Input
-            mt={2}
-            placeholder="Current Password"
-            bg="gray.600"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="currentPassword"
+            render={({ field: { onChange, ref, value } }) => (
+              <Input
+                ref={ref}
+                placeholder="Current password"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+                onBlur={handlePwFieldBlur}
+                onSubmitEditing={() => setFocus('newPassword')}
+                errorMsg={errors.currentPassword?.message}
+                _container={{ mt: 2 }}
+                bg="gray.600"
+                testID="input-current-password"
+              />
+            )}
           />
 
-          <Input
-            mt={4}
-            placeholder="New Password"
-            bg="gray.600"
-            secureTextEntry
-          />
-          <Input
-            mt={4}
-            placeholder="Confirm New Password"
-            bg="gray.600"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="newPassword"
+            render={({ field: { onChange, ref, value } }) => (
+              <Input
+                ref={ref}
+                placeholder="New Password"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+                onBlur={handlePwFieldBlur}
+                onSubmitEditing={() => setFocus('confirmPassword')}
+                errorMsg={errors.newPassword?.message}
+                _container={{ mt: 4 }}
+                bg="gray.600"
+                testID="input-new-password"
+              />
+            )}
           />
 
-          <Button mt={8} label="Update" />
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({ field: { onChange, ref, value } }) => (
+              <Input
+                ref={ref}
+                placeholder="Confirm New Password"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+                onBlur={handlePwFieldBlur}
+                onSubmitEditing={handleSubmit(handleUpdateProfile)}
+                errorMsg={errors.confirmPassword?.message}
+                _container={{ mt: 4 }}
+                bg="gray.600"
+                testID="input-confirm-password"
+              />
+            )}
+          />
+
+          <Button
+            mt={8}
+            label="Update"
+            onPress={handleSubmit(handleUpdateProfile)}
+            isLoading={isUpdating}
+          />
         </Center>
       </ScrollView>
     </VStack>

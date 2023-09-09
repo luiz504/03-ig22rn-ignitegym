@@ -1,15 +1,22 @@
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 
-import { screen, renderWithAllProviders } from '~/utils/test/test-utils'
+import {
+  screen,
+  renderWithAllProviders,
+  fireEvent,
+  waitFor,
+} from '~/utils/test/test-utils'
 import { MockedExercise, MockedUser, useAuthContextSpy } from '~/utils/test'
 
-import * as FetchExerciseModule from '~/hooks/useFetchExerciseDetailsQuery'
+import * as FetchExerciseModule from '~/hooks/queries/useFetchExerciseDetailsQuery'
 
 import { Exercise } from '.'
+import { api } from '~/libs/axios'
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
   useRoute: jest.fn(),
+  useNavigation: jest.fn(),
 }))
 describe('Exercise Component', () => {
   const exerciseID = 'someID'
@@ -21,7 +28,6 @@ describe('Exercise Component', () => {
   })
 
   it('should render correctly', () => {
-    useAuthContextSpy({ user: MockedUser, isLoadingData: false })
     jest
       .spyOn(FetchExerciseModule, 'useFetchExerciseDetailsQuery')
       .mockReturnValue({ isLoading: false, exercise: MockedExercise } as any)
@@ -41,7 +47,7 @@ describe('Exercise Component', () => {
 
   it('should show the skeletons when loading', async () => {
     jest.useFakeTimers()
-    useAuthContextSpy({ user: MockedUser, isLoadingData: false })
+
     jest
       .spyOn(FetchExerciseModule, 'useFetchExerciseDetailsQuery')
       .mockReturnValue({ isLoading: true, exercise: null } as any)
@@ -53,6 +59,30 @@ describe('Exercise Component', () => {
     expect(screen.getByTestId('repetitions-skeleton')).toBeTruthy()
 
     // Clean up skeleton animations
+    jest.clearAllTimers()
+  })
+
+  it('should redirect to history screen on success exercise history registration', async () => {
+    jest.useFakeTimers()
+    const navigate = jest.fn()
+
+    jest.mocked(useNavigation).mockReturnValue({ navigate } as any)
+    jest.spyOn(api, 'post').mockResolvedValue({ success: 200 })
+    jest
+      .spyOn(FetchExerciseModule, 'useFetchExerciseDetailsQuery')
+      .mockReturnValue({ isLoading: false, exercise: MockedExercise } as any)
+
+    renderWithAllProviders(<Exercise />)
+    const btnRegister = screen.getByTestId('btn-register')
+
+    fireEvent.press(btnRegister)
+
+    // Act
+    await waitFor(() =>
+      expect(btnRegister.props.accessibilityState.disabled).toBe(true),
+    )
+    await waitFor(() => expect(navigate).toHaveBeenCalledTimes(1))
+    expect(navigate).toHaveBeenCalledWith('history')
     jest.clearAllTimers()
   })
 })
