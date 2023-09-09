@@ -9,4 +9,6 @@ export const formErrorMessages = {
   confirmNewPasswordRequired: 'Confirm New Password is required.',
   passwordMin6: 'Password must be at least 6 characters.',
   passwordDoesNotMatch: 'Passwords does not match.',
+  newPasswordShouldNotBeTheSameAsOldPassword:
+    'New password should not be the same as old password.',
 }

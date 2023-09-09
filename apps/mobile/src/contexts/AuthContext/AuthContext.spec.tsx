@@ -14,6 +14,7 @@ import { MockedUser } from '~/utils/test'
 describe('AuthContext', () => {
   beforeEach(async () => {
     await AsyncStorage.clear()
+    jest.clearAllMocks()
   })
   const MockedToken = 'someToken'
   describe('loadUserStoredData effect', () => {
@@ -155,6 +156,34 @@ describe('AuthContext', () => {
       await waitFor(() => expect(result.current.user).toEqual(null))
       await waitFor(() => expect(storeSaveRemoveSpy).toHaveBeenCalledTimes(1))
       expect(api.defaults.headers.common.Authorization).toBeUndefined()
+    })
+  })
+
+  describe('updateUserProfile', () => {
+    it('should update user profile', async () => {
+      jest
+        .spyOn(StoreUserModule, 'storageUserGet')
+        .mockResolvedValue(MockedUser)
+      const storeUserSaveSpy = jest.spyOn(StoreUserModule, 'storageUserSave')
+
+      const { result } = renderHook(() => useContext(AuthContext), {
+        wrapper: AuthContextProvider,
+      })
+
+      await waitFor(() =>
+        expect(result.current.isLoadingStorageData).toBe(false),
+      )
+
+      const newName = 'Martel Doe'
+      const updatedUserProfile = { ...MockedUser, name: newName }
+      // Act
+      await act(async () => {
+        await result.current.updateUserProfile(updatedUserProfile)
+      })
+
+      await waitFor(() => expect(storeUserSaveSpy).toHaveBeenCalledTimes(1))
+      expect(storeUserSaveSpy).toHaveBeenCalledWith(updatedUserProfile)
+      expect(result.current.user).toEqual(updatedUserProfile)
     })
   })
 })

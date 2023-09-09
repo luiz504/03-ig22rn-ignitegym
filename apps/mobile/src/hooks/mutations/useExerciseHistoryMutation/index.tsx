@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
+import { useAppToast } from '~/hooks/useAppToast'
 
 import { api } from '~/libs/axios'
-import { useAppToast } from '../useAppToast'
+
 import { resolveErrorMessage } from '~/utils/AppError'
 
 type MutationParams = {

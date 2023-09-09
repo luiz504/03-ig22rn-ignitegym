@@ -1,6 +1,5 @@
 import { FC, useState } from 'react'
 import { Box, Center, Heading, Text, VStack } from 'native-base'
-import { useToast } from 'native-base/src/components/composites/Toast'
 import { ScrollView, TouchableOpacity } from 'react-native'
 import { Controller, useForm } from 'react-hook-form'
 import * as ImagePicker from 'expo-image-picker'
@@ -15,6 +14,8 @@ import { Button } from '~/components/Button'
 import { useAuth } from '~/hooks/useAuth'
 
 import { FormProfileType, formProfileSchema } from './formSchema'
+import { usePutUserProfileMutation } from '~/hooks/mutations/usePutUserProfileMutation'
+import { useAppToast } from '~/hooks/useAppToast'
 
 const PHOTO_SIZE = 33
 
@@ -22,9 +23,7 @@ export const Profile: FC = () => {
   const [isLoadingPhoto, setIsLoadingPhoto] = useState(false)
   const [userPhoto, setUserPhoto] = useState('https://github.com/luiz504.png')
 
-  const toast = useToast()
-
-  const { user } = useAuth()
+  const { user, updateUserProfile } = useAuth()
 
   const {
     control,
@@ -32,6 +31,7 @@ export const Profile: FC = () => {
     getValues,
     clearErrors,
     setFocus,
+    setValue,
     formState: { errors },
   } = useForm<FormProfileType>({
     resolver: zodResolver(formProfileSchema),
@@ -41,6 +41,26 @@ export const Profile: FC = () => {
     },
   })
 
+  //* Inputs Blur handlers
+  const handlePwFieldBlur = () => {
+    const { confirmPassword, currentPassword, newPassword } = getValues()
+
+    if (!confirmPassword && !currentPassword && !newPassword) {
+      clearErrors(['currentPassword', 'newPassword', 'confirmPassword'])
+    }
+  }
+
+  const handleNameInputBlur = (value: string) => {
+    const trimmedValue = value.trim()
+
+    if (!trimmedValue) {
+      setValue('name', user?.name as string)
+      clearErrors(['name'])
+    } else {
+      setValue('name', trimmedValue)
+    }
+  }
+  //* Submit handlers
   const handleUserPhotoSelect = async () => {
     try {
       setIsLoadingPhoto(true)
@@ -62,9 +82,7 @@ export const Profile: FC = () => {
 
       if (photoInfo.exists && !photoInfo.isDirectory) {
         if (photoInfo.size / 1024 / 1024 > 5) {
-          return toast.show({
-            placement: 'top',
-            bg: 'red.500',
+          return toast.showError({
             title: 'Change Photo Error',
             description:
               'This photo is too large. Please select one with max size of 5mb.',
@@ -73,9 +91,7 @@ export const Profile: FC = () => {
         setUserPhoto(photoSelected.assets[0].uri)
       }
     } catch (err) {
-      toast.show({
-        placement: 'top',
-        bg: 'red.500',
+      toast.showError({
         title: 'Change Photo Error',
         description: 'Something went wrong, try again later',
       })
@@ -83,17 +99,36 @@ export const Profile: FC = () => {
       setIsLoadingPhoto(false)
     }
   }
+  const { mutateAsync, isLoading: isUpdating } = usePutUserProfileMutation()
+  const toast = useAppToast()
 
   const handleUpdateProfile = async (data: FormProfileType) => {
-    // eslint-disable-next-line
-    console.log('result', data)
-  }
+    if (!user) return // Compiler Gisnastics
 
-  const handlePwFieldBlur = () => {
-    const { confirmPassword, currentPassword, newPassword } = getValues()
+    const nameHasChanged = data.name !== user?.name
+    const pwHasChanged = data.newPassword !== data.currentPassword
+    const pwExistsAndIsTheSame = !!data.newPassword && pwHasChanged
 
-    if (!confirmPassword && !currentPassword && !newPassword) {
-      clearErrors(['currentPassword', 'newPassword', 'confirmPassword'])
+    if (nameHasChanged || pwHasChanged) {
+      await mutateAsync({
+        name: data.name,
+        old_password: data.currentPassword,
+        password: data.newPassword,
+      })
+      if (pwHasChanged) {
+        setValue('currentPassword', '')
+        setValue('newPassword', '')
+        setValue('confirmPassword', '')
+      }
+      if (nameHasChanged) {
+        const userUpdated = user
+        userUpdated.name = data.name
+        await updateUserProfile(userUpdated)
+      }
+    }
+    if (pwExistsAndIsTheSame) {
+      toast.showError({ title: 'Old password provided equals new password.' })
+      setFocus('currentPassword')
     }
   }
 
@@ -133,6 +168,7 @@ export const Profile: FC = () => {
                 placeholder="Name"
                 value={value}
                 onChangeText={onChange}
+                onBlur={() => handleNameInputBlur(value)}
                 errorMsg={errors.name?.message}
                 _container={{ mt: 8 }}
                 bg="gray.600"
@@ -224,6 +260,7 @@ export const Profile: FC = () => {
             mt={8}
             label="Update"
             onPress={handleSubmit(handleUpdateProfile)}
+            isLoading={isUpdating}
           />
         </Center>
       </ScrollView>

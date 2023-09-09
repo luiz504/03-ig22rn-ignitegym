@@ -13,7 +13,7 @@ import { Header, HeaderSkeleton } from './components/Header'
 import { Button } from '~/components/Button'
 import { Skeleton } from '~/components/Skeleton'
 import { AppNavigatorRouteProps } from '~/routes/app.routes'
-import { useExerciseHistoryMutation } from '~/hooks/useExerciseHistoryMutation'
+import { useExerciseHistoryMutation } from '~/hooks/mutations/useExerciseHistoryMutation'
 
 type RouteParams = {
   exerciseId: number

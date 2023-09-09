@@ -22,6 +22,7 @@ type AuthContextType = {
   user: UserDTO | null
   signIn: (params: SignInDTO) => Promise<void>
   signOut: () => Promise<void>
+  updateUserProfile: (updatedUser: UserDTO) => Promise<void>
   isLoadingStorageData: boolean
 }
 export const AuthContext = createContext<AuthContextType>({} as AuthContextType)
@@ -75,6 +76,10 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
     setUser(null)
     delete api.defaults.headers.common.Authorization
   }
+  const updateUserProfile = async (userUpdated: UserDTO) => {
+    await storageUserSave(userUpdated)
+    setUser(userUpdated)
+  }
 
   const [isLoadingStorageData, setIsLoadingStorageData] = useState(true)
 
@@ -101,7 +106,7 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, signIn, signOut, isLoadingStorageData }}
+      value={{ user, signIn, signOut, updateUserProfile, isLoadingStorageData }}
     >
       {children}
     </AuthContext.Provider>

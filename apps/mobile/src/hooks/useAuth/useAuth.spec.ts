@@ -13,6 +13,7 @@ describe('useAuth hook', () => {
 
     try {
       renderHook(() => useAuth())
+      fail('Should have thrown an error')
     } catch (err) {
       expect((err as Error).message.length).toBeGreaterThan(0)
     }
@@ -31,6 +32,7 @@ describe('useAuth hook', () => {
       isLoadingStorageData: true,
       signIn: expect.any(Function),
       signOut: expect.any(Function),
+      updateUserProfile: expect.any(Function),
       user: null,
     })
 
