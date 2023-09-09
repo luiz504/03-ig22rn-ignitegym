@@ -2,13 +2,19 @@ import { FC, useState } from 'react'
 import { Box, Center, Heading, Text, VStack } from 'native-base'
 import { useToast } from 'native-base/src/components/composites/Toast'
 import { ScrollView, TouchableOpacity } from 'react-native'
+import { Controller, useForm } from 'react-hook-form'
 import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Header } from '~/components/Header'
 import { UserPhoto } from '~/components/UserPhoto'
 import { Input } from '~/components/Input'
 import { Button } from '~/components/Button'
+
+import { useAuth } from '~/hooks/useAuth'
+
+import { FormProfileType, formProfileSchema } from './formSchema'
 
 const PHOTO_SIZE = 33
 
@@ -17,6 +23,23 @@ export const Profile: FC = () => {
   const [userPhoto, setUserPhoto] = useState('https://github.com/luiz504.png')
 
   const toast = useToast()
+
+  const { user } = useAuth()
+
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    clearErrors,
+    setFocus,
+    formState: { errors },
+  } = useForm<FormProfileType>({
+    resolver: zodResolver(formProfileSchema),
+    resetOptions: { keepDirty: false, keepErrors: false },
+    defaultValues: {
+      name: user?.name,
+    },
+  })
 
   const handleUserPhotoSelect = async () => {
     try {
@@ -61,6 +84,19 @@ export const Profile: FC = () => {
     }
   }
 
+  const handleUpdateProfile = async (data: FormProfileType) => {
+    // eslint-disable-next-line
+    console.log('result', data)
+  }
+
+  const handlePwFieldBlur = () => {
+    const { confirmPassword, currentPassword, newPassword } = getValues()
+
+    if (!confirmPassword && !currentPassword && !newPassword) {
+      clearErrors(['currentPassword', 'newPassword', 'confirmPassword'])
+    }
+  }
+
   return (
     <VStack flex={1}>
       <Header title="Profile" />
@@ -88,9 +124,30 @@ export const Profile: FC = () => {
               Change Photo
             </Text>
           </TouchableOpacity>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, ref, value } }) => (
+              <Input
+                ref={ref}
+                placeholder="Name"
+                value={value}
+                onChangeText={onChange}
+                errorMsg={errors.name?.message}
+                _container={{ mt: 8 }}
+                bg="gray.600"
+                testID="input-name"
+              />
+            )}
+          />
 
-          <Input mt={8} placeholder="Name" bg="gray.600" />
-          <Input mt={4} placeholder="E-mail" bg="gray.600" isDisabled />
+          <Input
+            mt={4}
+            placeholder="E-mail"
+            bg="gray.600"
+            defaultValue={user?.email}
+            isDisabled
+          />
 
           <Heading
             color="gray.200"
@@ -103,27 +160,71 @@ export const Profile: FC = () => {
             Change Password
           </Heading>
 
-          <Input
-            mt={2}
-            placeholder="Current Password"
-            bg="gray.600"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="currentPassword"
+            render={({ field: { onChange, ref, value } }) => (
+              <Input
+                ref={ref}
+                placeholder="Current password"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+                onBlur={handlePwFieldBlur}
+                onSubmitEditing={() => setFocus('newPassword')}
+                errorMsg={errors.currentPassword?.message}
+                _container={{ mt: 2 }}
+                bg="gray.600"
+                testID="input-current-password"
+              />
+            )}
           />
 
-          <Input
-            mt={4}
-            placeholder="New Password"
-            bg="gray.600"
-            secureTextEntry
-          />
-          <Input
-            mt={4}
-            placeholder="Confirm New Password"
-            bg="gray.600"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="newPassword"
+            render={({ field: { onChange, ref, value } }) => (
+              <Input
+                ref={ref}
+                placeholder="New Password"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+                onBlur={handlePwFieldBlur}
+                onSubmitEditing={() => setFocus('confirmPassword')}
+                errorMsg={errors.newPassword?.message}
+                _container={{ mt: 4 }}
+                bg="gray.600"
+                testID="input-new-password"
+              />
+            )}
           />
 
-          <Button mt={8} label="Update" />
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({ field: { onChange, ref, value } }) => (
+              <Input
+                ref={ref}
+                placeholder="Confirm New Password"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+                onBlur={handlePwFieldBlur}
+                onSubmitEditing={handleSubmit(handleUpdateProfile)}
+                errorMsg={errors.confirmPassword?.message}
+                _container={{ mt: 4 }}
+                bg="gray.600"
+                testID="input-confirm-password"
+              />
+            )}
+          />
+
+          <Button
+            mt={8}
+            label="Update"
+            onPress={handleSubmit(handleUpdateProfile)}
+          />
         </Center>
       </ScrollView>
     </VStack>
