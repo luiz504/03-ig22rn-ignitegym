@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { Box, Center, Heading, Text, VStack } from 'native-base'
 import { ScrollView, TouchableOpacity } from 'react-native'
 import { Controller, useForm } from 'react-hook-form'
@@ -6,24 +6,37 @@ import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import DefaultPhoto from '~/assets/images/userPhotoDefault.png'
+
+import { useAuth } from '~/hooks/useAuth'
+import { usePutUserProfileMutation } from '~/hooks/mutations/usePutUserProfileMutation'
+import { useAppToast } from '~/hooks/useAppToast'
+import { usePatchUserProfileAvatar } from '~/hooks/mutations/usePatchUserProfileAvatar'
+
+import { api } from '~/libs/axios'
+
 import { Header } from '~/components/Header'
 import { UserPhoto } from '~/components/UserPhoto'
 import { Input } from '~/components/Input'
 import { Button } from '~/components/Button'
 
-import { useAuth } from '~/hooks/useAuth'
-
 import { FormProfileType, formProfileSchema } from './formSchema'
-import { usePutUserProfileMutation } from '~/hooks/mutations/usePutUserProfileMutation'
-import { useAppToast } from '~/hooks/useAppToast'
 
 const PHOTO_SIZE = 33
 
 export const Profile: FC = () => {
-  const [isLoadingPhoto, setIsLoadingPhoto] = useState(false)
-  const [userPhoto, setUserPhoto] = useState('https://github.com/luiz504.png')
-
   const { user, updateUserProfile } = useAuth()
+  const [isLoadingPhoto, setIsLoadingPhoto] = useState(false)
+  const [userPhoto, setUserPhoto] = useState<string | null>(null)
+
+  const avatarSource = useMemo(() => {
+    if (!userPhoto) {
+      return user?.avatar
+        ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+        : DefaultPhoto
+    }
+    return { uri: userPhoto }
+  }, [user, userPhoto])
 
   const {
     control,
@@ -40,6 +53,62 @@ export const Profile: FC = () => {
       name: user?.name,
     },
   })
+  const { mutateAsync: mutateAvatar, isLoading: isUploading } =
+    usePatchUserProfileAvatar()
+  //* Image Handlers
+  const handleUserPhotoSelect = async () => {
+    if (!user) return
+    try {
+      setIsLoadingPhoto(true)
+      const photosSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+        allowsMultipleSelection: false,
+      })
+
+      if (photosSelected.canceled || !photosSelected.assets[0].uri) {
+        return
+      }
+      const photoSelected = photosSelected.assets[0]
+
+      const photoInfo = await FileSystem.getInfoAsync(photoSelected.uri)
+
+      if (photoInfo.exists && !photoInfo.isDirectory) {
+        if (photoInfo.size / 1024 / 1024 > 5) {
+          return toast.showError({
+            title: 'Change Photo Error',
+            description:
+              'This photo is too large. Please select one with max size of 5mb.',
+          })
+        }
+
+        const fileExtension = photoSelected.uri.split('.').pop()
+
+        const photoFile = {
+          name: `${user?.name}.${fileExtension}`.toLowerCase(),
+          uri: photoSelected.uri,
+          type: `${photoSelected.type}/${fileExtension}`,
+        }
+        setUserPhoto(photoSelected.uri)
+
+        const response = await mutateAvatar(photoFile)
+
+        const updatedUser = user
+        updatedUser.avatar = response.avatar
+        await updateUserProfile(updatedUser)
+      }
+    } catch (err) {
+      setUserPhoto(null)
+      toast.showError({
+        title: 'Change Photo Error',
+        description: 'Something went wrong, try again later',
+      })
+    } finally {
+      setIsLoadingPhoto(false)
+    }
+  }
 
   //* Inputs Blur handlers
   const handlePwFieldBlur = () => {
@@ -60,50 +129,13 @@ export const Profile: FC = () => {
       setValue('name', trimmedValue)
     }
   }
+
   //* Submit handlers
-  const handleUserPhotoSelect = async () => {
-    try {
-      setIsLoadingPhoto(true)
-      const photoSelected = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
-        aspect: [4, 4],
-        allowsEditing: true,
-        allowsMultipleSelection: false,
-      })
-
-      if (photoSelected.canceled || !photoSelected.assets[0].uri) {
-        return
-      }
-
-      const photoInfo = await FileSystem.getInfoAsync(
-        photoSelected.assets[0].uri,
-      )
-
-      if (photoInfo.exists && !photoInfo.isDirectory) {
-        if (photoInfo.size / 1024 / 1024 > 5) {
-          return toast.showError({
-            title: 'Change Photo Error',
-            description:
-              'This photo is too large. Please select one with max size of 5mb.',
-          })
-        }
-        setUserPhoto(photoSelected.assets[0].uri)
-      }
-    } catch (err) {
-      toast.showError({
-        title: 'Change Photo Error',
-        description: 'Something went wrong, try again later',
-      })
-    } finally {
-      setIsLoadingPhoto(false)
-    }
-  }
   const { mutateAsync, isLoading: isUpdating } = usePutUserProfileMutation()
   const toast = useAppToast()
 
   const handleUpdateProfile = async (data: FormProfileType) => {
-    if (!user) return // Compiler Gisnastics
+    if (!user) return // Compiler Gymnastics
 
     const nameHasChanged = data.name !== user?.name
     const pwHasChanged = data.newPassword !== data.currentPassword
@@ -141,13 +173,13 @@ export const Profile: FC = () => {
           <Box position={'relative'}>
             <UserPhoto
               size={PHOTO_SIZE}
-              source={{ uri: userPhoto }}
+              source={avatarSource}
               alt="User Photo"
               testID="img-user-photo"
             />
           </Box>
 
-          <TouchableOpacity>
+          <TouchableOpacity disabled={isUploading}>
             <Text
               color="green.500"
               fontFamily="heading"
@@ -159,6 +191,7 @@ export const Profile: FC = () => {
               Change Photo
             </Text>
           </TouchableOpacity>
+
           <Controller
             control={control}
             name="name"

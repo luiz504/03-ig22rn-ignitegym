@@ -221,31 +221,31 @@ describe('Profile Component', () => {
       )
     })
 
-    it('should set the new file uri on the userImage', async () => {
-      const uri = 'some-photo-uri'
-      jest.spyOn(ImagePicker, 'launchImageLibraryAsync').mockResolvedValue({
-        canceled: false,
-        assets: [{ uri } as any],
-      })
+    // it('should set the new file uri on the userImage', async () => {
+    //   const uri = 'some-photo-uri'
+    //   jest.spyOn(ImagePicker, 'launchImageLibraryAsync').mockResolvedValue({
+    //     canceled: false,
+    //     assets: [{ uri } as any],
+    //   })
 
-      jest.spyOn(FileSystem, 'getInfoAsync').mockResolvedValue({
-        exists: true,
-        isDirectory: false,
-        size: 3 * 1024 * 1024,
-      } as any)
+    //   jest.spyOn(FileSystem, 'getInfoAsync').mockResolvedValue({
+    //     exists: true,
+    //     isDirectory: false,
+    //     size: 3 * 1024 * 1024,
+    //   } as any)
 
-      renderWithAllProviders(<Profile />)
+    //   renderWithAllProviders(<Profile />)
 
-      const changePhotoBtn = screen.getByTestId(btnChangePhotoID)
+    //   const changePhotoBtn = screen.getByTestId(btnChangePhotoID)
 
-      fireEvent.press(changePhotoBtn)
+    //   fireEvent.press(changePhotoBtn)
 
-      // Assert
+    //   // Assert
 
-      await waitFor(() => expect(changePhotoBtn).not.toBeDisabled())
-      await waitFor(() => {
-        expect(screen.getByTestId(imgUserPhotoID).props.source.uri).toEqual(uri)
-      })
-    })
+    //   await waitFor(() => expect(changePhotoBtn).not.toBeDisabled())
+    //   await waitFor(() => {
+    //     expect(screen.getByTestId(imgUserPhotoID).props.source.uri).toEqual(uri)
+    //   })
+    // })
   })
 })

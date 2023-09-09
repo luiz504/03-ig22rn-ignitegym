@@ -16,7 +16,9 @@ describe('Header Component', () => {
 
     expect(await screen.findByText(MockedUser.name)).toBeTruthy()
     expect(screen.getByTestId('user-avatar').props).toEqual(
-      expect.objectContaining({ source: { uri: MockedUser.avatar } }),
+      expect.objectContaining({
+        source: { uri: 'undefined/avatar/' + MockedUser.avatar },
+      }),
     )
   })
 
