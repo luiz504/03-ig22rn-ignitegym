@@ -10,6 +10,7 @@ type UseAuthSpy = {
 const useAuthContextSpy = ({ user, isLoadingData }: UseAuthSpy = {}) => {
   const signInMock = jest.fn()
   const signOutMock = jest.fn()
+  const updateUserProfileMock = jest.fn()
 
   const mock0 = jest
     .spyOn(AuthContextModule, 'AuthContextProvider')
@@ -18,6 +19,7 @@ const useAuthContextSpy = ({ user, isLoadingData }: UseAuthSpy = {}) => {
         value={{
           signIn: signInMock,
           signOut: signOutMock,
+          updateUserProfile: updateUserProfileMock,
           user: user || null,
           isLoadingStorageData: isLoadingData || false,
         }}
@@ -29,7 +31,7 @@ const useAuthContextSpy = ({ user, isLoadingData }: UseAuthSpy = {}) => {
   const mockRestore = () => {
     mock0.mockRestore()
   }
-  return { signInMock, signOutMock, mockRestore }
+  return { signInMock, signOutMock, updateUserProfileMock, mockRestore }
 }
 
 export { useAuthContextSpy }
