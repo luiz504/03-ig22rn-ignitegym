@@ -9,6 +9,7 @@ import {
 import { usePatchUserProfileAvatar } from '.'
 
 import * as ModUseAppToast from '~/hooks/useAppToast'
+import * as RQ from '@tanstack/react-query'
 
 describe('usePatchUserProfileMutation', () => {
   beforeEach(() => {
@@ -88,5 +89,25 @@ describe('usePatchUserProfileMutation', () => {
     expect(showError).toHaveBeenCalledWith({
       title: 'Fail to update profile.',
     })
+  })
+
+  it('should trigger reset mutation', async () => {
+    const showError = jest.fn()
+    jest
+      .spyOn(ModUseAppToast, 'useAppToast')
+      .mockReturnValue({ showError } as any)
+    jest.useFakeTimers()
+    const resetSpy = jest.fn()
+    jest.spyOn(RQ, 'useMutation').mockReturnValue({ reset: resetSpy } as any)
+    const { result } = renderHook(() => usePatchUserProfileAvatar(), {
+      wrapper: NBQueryNavProviders,
+    })
+
+    act(() => {
+      result.current.reset()
+    })
+    jest.clearAllTimers()
+
+    await waitFor(() => expect(resetSpy).toHaveBeenCalled())
   })
 })

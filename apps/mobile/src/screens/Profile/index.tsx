@@ -21,6 +21,7 @@ import { Input } from '~/components/Input'
 import { Button } from '~/components/Button'
 
 import { FormProfileType, formProfileSchema } from './formSchema'
+import { UserDTO } from '~/dtos/UserDTO'
 
 const PHOTO_SIZE = 33
 
@@ -30,12 +31,13 @@ export const Profile: FC = () => {
   const [userPhoto, setUserPhoto] = useState<string | null>(null)
 
   const avatarSource = useMemo(() => {
-    if (!userPhoto) {
-      return user?.avatar
-        ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
-        : DefaultPhoto
+    if (userPhoto) {
+      return { uri: userPhoto }
     }
-    return { uri: userPhoto }
+    if (user?.avatar) {
+      return { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+    }
+    return DefaultPhoto
   }, [user, userPhoto])
 
   const {
@@ -45,7 +47,7 @@ export const Profile: FC = () => {
     clearErrors,
     setFocus,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormProfileType>({
     resolver: zodResolver(formProfileSchema),
     resetOptions: { keepDirty: false, keepErrors: false },
@@ -57,7 +59,8 @@ export const Profile: FC = () => {
     usePatchUserProfileAvatar()
   //* Image Handlers
   const handleUserPhotoSelect = async () => {
-    if (!user) return
+    const currentUser = user as UserDTO
+
     try {
       setIsLoadingPhoto(true)
       const photosSelected = await ImagePicker.launchImageLibraryAsync({
@@ -91,16 +94,18 @@ export const Profile: FC = () => {
           uri: photoSelected.uri,
           type: `${photoSelected.type}/${fileExtension}`,
         }
+
         setUserPhoto(photoSelected.uri)
 
         const response = await mutateAvatar(photoFile)
 
-        const updatedUser = user
+        const updatedUser = currentUser
         updatedUser.avatar = response.avatar
+
         await updateUserProfile(updatedUser)
       }
     } catch (err) {
-      setUserPhoto(null)
+      setUserPhoto(currentUser.avatar)
       toast.showError({
         title: 'Change Photo Error',
         description: 'Something went wrong, try again later',
@@ -135,32 +140,48 @@ export const Profile: FC = () => {
   const toast = useAppToast()
 
   const handleUpdateProfile = async (data: FormProfileType) => {
-    if (!user) return // Compiler Gymnastics
+    const currentUser = user as UserDTO
 
-    const nameHasChanged = data.name !== user?.name
-    const pwHasChanged = data.newPassword !== data.currentPassword
-    const pwExistsAndIsTheSame = !!data.newPassword && pwHasChanged
+    const nameHasChanged = data.name !== currentUser.name
+
+    const hasCurrentAndNewPassword =
+      !!data.newPassword && !!data.currentPassword
+    const pwHasChanged =
+      hasCurrentAndNewPassword && data.newPassword !== data.currentPassword
+    const pwExistsAndIsTheSame = hasCurrentAndNewPassword && !pwHasChanged
+
+    if (pwExistsAndIsTheSame) {
+      toast.showError({ title: 'Old password provided equals new password.' })
+      setFocus('currentPassword')
+      return
+    }
 
     if (nameHasChanged || pwHasChanged) {
-      await mutateAsync({
-        name: data.name,
-        old_password: data.currentPassword,
-        password: data.newPassword,
-      })
+      const dto: Partial<{
+        name: string
+        old_password: string
+        password: string
+      }> = {}
+      nameHasChanged && (dto.name = data.name)
+      pwHasChanged &&
+        Object.assign(dto, {
+          old_password: data.currentPassword,
+          password: data.newPassword,
+        })
+
+      await mutateAsync(dto)
+
+      if (nameHasChanged) {
+        const userUpdated = currentUser
+        userUpdated.name = data.name
+        await updateUserProfile(userUpdated)
+      }
+
       if (pwHasChanged) {
         setValue('currentPassword', '')
         setValue('newPassword', '')
         setValue('confirmPassword', '')
       }
-      if (nameHasChanged) {
-        const userUpdated = user
-        userUpdated.name = data.name
-        await updateUserProfile(userUpdated)
-      }
-    }
-    if (pwExistsAndIsTheSame) {
-      toast.showError({ title: 'Old password provided equals new password.' })
-      setFocus('currentPassword')
     }
   }
 
@@ -293,7 +314,8 @@ export const Profile: FC = () => {
             mt={8}
             label="Update"
             onPress={handleSubmit(handleUpdateProfile)}
-            isLoading={isUpdating}
+            isLoading={isUpdating || isSubmitting}
+            testID="btn-submit"
           />
         </Center>
       </ScrollView>
