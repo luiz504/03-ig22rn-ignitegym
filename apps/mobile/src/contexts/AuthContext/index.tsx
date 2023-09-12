@@ -61,7 +61,10 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
 
       await Promise.all([
         storageUserSave(userData),
-        storageAuthTokenSave(data.token),
+        storageAuthTokenSave({
+          token: data.token,
+          refresh_token: data.refresh_token,
+        }),
         userAndTokenUpdate(userData, data.token),
       ])
 
@@ -87,13 +90,13 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
     try {
       setIsLoadingStorageData(true)
 
-      const [userData, token] = await Promise.all([
+      const [userData, tokens] = await Promise.all([
         storageUserGet(),
         storageAuthTokenGet(),
       ])
 
-      if (userData && token) {
-        await userAndTokenUpdate(userData, token)
+      if (userData && tokens) {
+        await userAndTokenUpdate(userData, tokens.token)
       }
     } finally {
       setIsLoadingStorageData(false)
@@ -103,6 +106,14 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
   useEffect(() => {
     loadUserStoredData()
   }, [loadUserStoredData])
+
+  useEffect(() => {
+    const subscribe = api.registerInterceptorTokenManager(signOut)
+
+    return () => {
+      subscribe()
+    }
+  }, [])
 
   return (
     <AuthContext.Provider

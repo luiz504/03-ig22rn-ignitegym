@@ -1,24 +1,30 @@
-import axios, { AxiosResponse } from 'axios'
-import { AppError } from '~/utils/AppError'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import axios, { AxiosInstance } from 'axios'
+import { onFulfilled, onRejected } from '~/middlewares/api.interceptors'
+import { RefreshQueue } from '~/utils/RefreshQueue'
+
+type SignOut = () => void
+
+export interface APIInstanceCustom extends AxiosInstance {
+  registerInterceptorTokenManager: (signOut: SignOut) => () => void
+}
 
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
-})
+}) as APIInstanceCustom
 
-api.interceptors.response.use(onFulfilled, onRejected)
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function onRejected(error: any) {
-  if (error?.response?.data?.message) {
-    return Promise.reject(new AppError(error.response.data.message))
-  } else {
-    return Promise.reject(error)
+const refreshQueue = new RefreshQueue()
+api.registerInterceptorTokenManager = (signOut) => {
+  const interceptTokenManager = api.interceptors.response.use(
+    onFulfilled,
+    (err) => onRejected(err, signOut, refreshQueue, api),
+  )
+  //
+  return () => {
+    api.interceptors.response.eject(interceptTokenManager)
   }
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function onFulfilled(response: AxiosResponse<any, any>) {
-  return response
-}
+
 // api.interceptors.request.use(
 //   (config) => {
 //     console.log('Interceptor Req config', config)

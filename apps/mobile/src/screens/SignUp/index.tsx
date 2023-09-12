@@ -208,7 +208,7 @@ export const SignUp: FC = () => {
                 label={'Sign up'}
                 onPress={handleSubmit(handleClickSignUp)}
                 testID="btn-submit"
-                disabled={isSubmitting}
+                isLoading={isSubmitting}
               />
             </Center>
 

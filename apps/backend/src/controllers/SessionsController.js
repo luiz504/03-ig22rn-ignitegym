@@ -11,26 +11,24 @@ class SessionsController {
     const user = await knex("users").where({ email: email.toLowerCase() }).first();
 
     if (!user) {
-      throw new AppError("E-mail e/ou senha incorreta.", 404);
+      throw new AppError("E-mail and/or password wrong.", 404);
     }
 
     const passwordMatched = await compare(password, user.password);
 
     if (!passwordMatched) {
-      throw new AppError("E-mail e/ou senha incorreta.", 404);
+      throw new AppError("E-mail and/or password wrong.", 404);
     }
 
     const generateTokenProvider = new GenerateToken();
     const token = await generateTokenProvider.execute(user.id);
 
-    await knex("users_tokens").where({ user_id: user.id }).delete();
-
     const generateRefreshToken = new GenerateRefreshToken();
-    generateRefreshToken.execute(user.id, token);
+    const refresh_token = await generateRefreshToken.execute(user.id);
 
     delete user.password;
 
-    response.status(201).json({ token, user });
+    response.status(201).json({ user, token, refresh_token });
   }
 }
 

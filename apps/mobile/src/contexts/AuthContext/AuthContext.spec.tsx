@@ -17,14 +17,16 @@ describe('AuthContext', () => {
     jest.clearAllMocks()
   })
   const MockedToken = 'someToken'
+  const MockedRefreshToken = 'someRefreshToken'
   describe('loadUserStoredData effect', () => {
     it('should load the stored userData and handle the loading state', async () => {
       jest
         .spyOn(StoreUserModule, 'storageUserGet')
         .mockResolvedValue(MockedUser)
-      jest
-        .spyOn(StoreAuthModule, 'storageAuthTokenGet')
-        .mockResolvedValue(MockedToken)
+      jest.spyOn(StoreAuthModule, 'storageAuthTokenGet').mockResolvedValue({
+        token: MockedToken,
+        refresh_token: MockedRefreshToken,
+      })
 
       const { result } = renderHook(() => useContext(AuthContext), {
         wrapper: AuthContextProvider,
@@ -96,11 +98,15 @@ describe('AuthContext', () => {
     })
 
     it('should sign in correctly', async () => {
-      const mockPost = jest
-        .spyOn(api, 'post')
-        .mockImplementation(() =>
-          Promise.resolve({ data: { user: MockedUser, token: MockedToken } }),
-        )
+      const mockPost = jest.spyOn(api, 'post').mockImplementation(() =>
+        Promise.resolve({
+          data: {
+            user: MockedUser,
+            token: MockedToken,
+            refresh_token: MockedRefreshToken,
+          },
+        }),
+      )
       const storeSaveUserSpy = jest.spyOn(StoreUserModule, 'storageUserSave')
       const { result } = renderHook(() => useContext(AuthContext), {
         wrapper: AuthContextProvider,
