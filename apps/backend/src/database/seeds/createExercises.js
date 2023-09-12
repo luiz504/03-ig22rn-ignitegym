@@ -2,210 +2,210 @@ exports.seed = async function (knex) {
   await knex('exercises').del()
   await knex('exercises').insert([
     {
-      name: 'Supino inclinado com barra',
+      name: 'Incline Barbell Bench Press',
       series: 4,
       repetitions: 12,
-      group: 'peito',
+      group: 'chest',
       demo: 'supino_inclinado_com_barra.gif',
-      thumb: 'supino_inclinado_com_barra.png',
+      thumb: 'supino_inclinado_com_barra.png'
     },
     {
-      name: 'Crucifixo reto',
+      name: 'Flat Dumbbell Fly',
       series: 3,
       repetitions: 12,
-      group: 'peito',
+      group: 'chest',
       demo: 'crucifixo_reto.gif',
       thumb: 'crucifixo_reto.png'
     },
     {
-      name: 'Supino reto com barra',
+      name: 'Flat Barbell Bench Press',
       series: 3,
       repetitions: 12,
-      group: 'peito',
+      group: 'chest',
       demo: 'supino_reto_com_barra.gif',
       thumb: 'supino_reto_com_barra.png'
     },
     {
-      name: 'Francês deitado com halteres',
+      name: 'Dumbbell Skull Crushers',
       series: 3,
       repetitions: 12,
-      group: 'tríceps',
+      group: 'triceps',
       demo: 'frances_deitado_com_halteres.gif',
       thumb: 'frances_deitado_com_halteres.png'
     },
     {
-      name: 'Corda Cross',
+      name: 'Tricep Pushdown with Rope',
       series: 4,
       repetitions: 12,
-      group: 'tríceps',
+      group: 'triceps',
       demo: 'corda_cross.gif',
       thumb: 'corda_cross.png'
     },
     {
-      name: 'Barra Cross',
+      name: 'Tricep Pushdown with Bar',
       series: 3,
       repetitions: 12,
-      group: 'tríceps',
+      group: 'triceps',
       demo: 'barra_cross.gif',
       thumb: 'barra_cross.png'
     },
     {
-      name: 'Tríceps testa',
+      name: 'Close-Grip Bench Press',
       series: 4,
       repetitions: 12,
-      group: 'tríceps',
+      group: 'triceps',
       demo: 'triceps_testa.gif',
       thumb: 'triceps_testa.png'
     },
     {
-      name: 'Levantamento terra',
+      name: 'Deadlift',
       series: 3,
       repetitions: 12,
-      group: 'costas',
+      group: 'back',
       demo: 'levantamento_terra.gif',
       thumb: 'levantamento_terra.png'
     },
     {
-      name: 'Pulley frontal',
+      name: 'Front Lat Pulldown',
       series: 3,
       repetitions: 12,
-      group: 'costas',
+      group: 'back',
       demo: 'pulley_frontal.gif',
       thumb: 'pulley_frontal.png'
     },
     {
-      name: 'Pulley atrás',
+      name: 'Behind the Neck Lat Pulldown',
       series: 4,
       repetitions: 12,
-      group: 'costas',
+      group: 'back',
       demo: 'pulley_atras.gif',
       thumb: 'pulley_atras.png'
     },
     {
-      name: 'Remada baixa',
+      name: 'Bent Over Rows',
       series: 4,
       repetitions: 12,
-      group: 'costas',
+      group: 'back',
       demo: 'remada_baixa.gif',
       thumb: 'remada_baixa.png'
     },
     {
-      name: 'Serrote',
+      name: 'Dumbbell Rows',
       series: 4,
       repetitions: 12,
-      group: 'costas',
+      group: 'back',
       demo: 'serrote.gif',
       thumb: 'serrote.png'
     },
     {
-      name: 'Rosca alternada com banco inclinado',
+      name: 'Alternating Dumbbell Curl on Incline Bench',
       series: 4,
       repetitions: 12,
-      group: 'bíceps',
+      group: 'biceps',
       demo: 'rosca_alternada_com_banco_inclinado.gif',
       thumb: 'rosca_alternada_com_banco_inclinado.png'
     },
     {
-      name: 'Rosca Scott barra w',
+      name: 'Barbell Curl (Scott Curl)',
       series: 4,
       repetitions: 12,
-      group: 'bíceps',
+      group: 'biceps',
       demo: 'rosca_scott_barra_w.gif',
       thumb: 'rosca_scott_barra_w.png'
     },
     {
-      name: 'Rosca direta barra reta',
+      name: 'Straight Barbell Curl',
       series: 3,
       repetitions: 12,
-      group: 'bíceps',
+      group: 'biceps',
       demo: 'rosca_direta_barra_reta.gif',
       thumb: 'rosca_direta_barra_reta.png'
     },
     {
-      name: 'Martelo em pé',
+      name: 'Standing Dumbbell Hammer Curl',
       series: 3,
       repetitions: 12,
-      group: 'bíceps',
+      group: 'biceps',
       demo: 'martelo_em_pe.gif',
       thumb: 'martelo_em_pe.png'
     },
     {
-      name: 'Rosca punho',
+      name: 'Wrist Curl',
       series: 4,
       repetitions: 12,
-      group: 'antebraço',
+      group: 'forearm',
       demo: 'rosca_punho.gif',
       thumb: 'rosca_punho.png'
     },
     {
-      name: 'Leg press 45 graus',
+      name: 'Leg Press 45 Degrees',
       series: 4,
       repetitions: 12,
-      group: 'pernas',
+      group: 'legs',
       demo: 'leg_press_45_graus.gif',
       thumb: 'leg_press_45_graus.png'
     },
     {
-      name: 'Extensor de pernas',
+      name: 'Leg Extension',
       series: 4,
       repetitions: 12,
-      group: 'pernas',
+      group: 'legs',
       demo: 'extensor_de_pernas.gif',
       thumb: 'extensor_de_pernas.png'
     },
     {
-      name: 'Abdutora',
+      name: 'Abductor Machine',
       series: 4,
       repetitions: 12,
-      group: 'pernas',
+      group: 'legs',
       demo: 'abdutora.gif',
       thumb: 'abdutora.png'
     },
     {
-      name: 'Stiff',
+      name: 'Stiff Leg Deadlift',
       series: 4,
       repetitions: 12,
-      group: 'pernas',
+      group: 'legs',
       demo: 'stiff.gif',
-      thumb: 'stiff.png',
+      thumb: 'stiff.png'
     },
     {
       name: 'Neck Press',
       series: 4,
       repetitions: 10,
-      group: 'ombro',
+      group: 'shoulder',
       demo: 'neck-press.gif',
       thumb: 'neck-press.png'
     },
     {
-      name: 'Desenvolvimento maquina',
+      name: 'Machine Shoulder Press',
       series: 3,
       repetitions: 10,
-      group: 'ombro',
+      group: 'shoulder',
       demo: 'desenvolvimento_maquina.gif',
       thumb: 'desenvolvimento_maquina.png'
     },
     {
-      name: 'Elevação lateral com halteres sentado',
+      name: 'Seated Dumbbell Lateral Raise',
       series: 4,
       repetitions: 10,
-      group: 'ombro',
+      group: 'shoulder',
       demo: 'elevacao_lateral_com_halteres_sentado.gif',
-      thumb: 'elevacao_lateral_com_halteres_sentado.png'
+      thumb: 'elevacao_lateral_com_halteres_sentado.png',
     },
     {
-      name: 'Encolhimento com halteres',
+      name: 'Dumbbell Shrug',
       series: 4,
       repetitions: 10,
-      group: 'trapézio',
+      group: 'trapeze',
       demo: 'encolhimento_com_halteres.gif',
       thumb: 'encolhimento_com_halteres.png'
     },
     {
-      name: 'Encolhimento com barra',
+      name: 'Barbell Shrug',
       series: 4,
       repetitions: 10,
-      group: 'trapézio',
+      group: 'trapeze',
       demo: 'encolhimento_com_barra.gif',
       thumb: 'encolhimento_com_barra.png'
     }

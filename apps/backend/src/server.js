@@ -24,9 +24,6 @@ const routes = require("./routes");
 
 app.use(express.json());
 app.use(cors());
-app.use((req, res, next) => {
-  setTimeout(next, 1000)
-})
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 

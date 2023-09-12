@@ -3,7 +3,6 @@ import { onFulfilled, onRejected } from './api.interceptors'
 import { AppError } from '~/utils/AppError'
 import { RefreshQueue } from '~/utils/RefreshQueue'
 import * as StorageAuthMod from '~/storage/auth'
-import * as refreshTokenRequestMod from '~/http/refreshToken'
 
 import * as APIMod from '~/libs/axios'
 import MockAdapter from 'axios-mock-adapter'
@@ -109,12 +108,9 @@ describe('api.interceptor module', () => {
       it('should call refreshToken when the error message is token.expired or token.invalid', async () => {
         useStoredAuth()
 
-        jest
-          .spyOn(refreshTokenRequestMod, 'refreshTokenRequest')
-          .mockResolvedValue({ data: newTokens } as any)
-
         const mockAdapter = new MockAdapter(api)
         mockAdapter.onGet().reply(200)
+        mockAdapter.onPost().reply(200, newTokens)
 
         const configData = { some: 'config' }
         const localError = {
@@ -138,16 +134,10 @@ describe('api.interceptor module', () => {
       it('should add the Promises to the Queue when it is refreshing and resolve all after success on refresh', async () => {
         useStoredAuth()
         const addItemToQueueSpu = jest.spyOn(refreshQueue, 'addItem')
-        jest
-          .spyOn(refreshTokenRequestMod, 'refreshTokenRequest')
-          .mockResolvedValue(
-            new Promise((resolve) =>
-              setTimeout(() => resolve({ data: newTokens } as any), 1000),
-            ),
-          )
+
         const mockAdapter = new MockAdapter(api)
         mockAdapter.onGet().reply(200)
-
+        mockAdapter.onPost().reply(200, newTokens)
         const localError = {
           ...JSON.parse(JSON.stringify(expiredTokenError)),
           config: {},
@@ -170,13 +160,10 @@ describe('api.interceptor module', () => {
       it('should add the Promises to the Queue when it is refreshing and reject all after success on refresh', async () => {
         useStoredAuth()
         const addItemToQueueSpu = jest.spyOn(refreshQueue, 'addItem')
-        jest
-          .spyOn(refreshTokenRequestMod, 'refreshTokenRequest')
-          .mockResolvedValue(
-            new Promise((resolve, reject) =>
-              setTimeout(() => reject(new Error('some reason')), 1000),
-            ),
-          )
+
+        const mockAdapter = new MockAdapter(api)
+        mockAdapter.onGet().reply(200)
+        mockAdapter.onPost().reply(404)
 
         const localError = {
           ...JSON.parse(JSON.stringify(expiredTokenError)),

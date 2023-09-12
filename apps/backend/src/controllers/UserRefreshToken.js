@@ -9,13 +9,13 @@ class UserRefreshToken {
     const { refresh_token } = request.body;
 
     if (!refresh_token) {
-      throw new AppError("Informe o token de autenticação.", 401);
+      throw new AppError("Inform an authentication token.", 401);
     }
 
     const refreshToken = await knex("refresh_token").where({ refresh_token }).first();
 
     if (!refreshToken) {
-      throw new AppError("Refresh token não encontrado para este usuário.", 401);
+      throw new AppError("Refresh token not found for this user.", 401);
     }
 
     const generateTokenProvider = new GenerateToken();

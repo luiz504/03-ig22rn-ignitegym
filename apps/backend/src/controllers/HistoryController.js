@@ -50,7 +50,7 @@ class HistoryController {
     const user_id = request.user.id;
 
     if (!exercise_id) {
-      throw new AppError("Informe o id do exercício.");
+      throw new AppError("Inform the exercise Id.");
     }
 
     await knex("history").insert({ user_id, exercise_id });

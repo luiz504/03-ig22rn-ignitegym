@@ -6,7 +6,6 @@ import { storageAuthTokenGet, storageAuthTokenSave } from '~/storage/auth'
 import { RefreshQueue } from '~/utils/RefreshQueue'
 import { AppError } from '~/utils/AppError'
 import { APIInstanceCustom } from '~/libs/axios'
-import { refreshTokenRequest } from '~/http/refreshToken'
 
 export async function onRejected(
   error: any,
@@ -50,7 +49,7 @@ export async function onRejected(
         reject: (error: any) => void,
       ) => {
         try {
-          const { data } = await refreshTokenRequest({
+          const { data } = await api.post('/sessions/refresh-token', {
             refresh_token: response.refresh_token,
           })
 
