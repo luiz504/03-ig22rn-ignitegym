@@ -19,6 +19,8 @@ describe('axios api response interceptor', () => {
 
       const _onFulfilled = jest.spyOn(APIInterceptorsMod, 'onFulfilled')
       const _onRejected = jest.spyOn(APIInterceptorsMod, 'onRejected')
+
+      // Act
       const cleanUp = api.registerInterceptorTokenManager(signOut)
 
       expect(useSpy).toHaveBeenCalled()

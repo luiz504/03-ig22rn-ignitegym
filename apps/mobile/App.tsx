@@ -41,7 +41,7 @@ export default function App() {
       <NativeBaseProvider theme={THEME}>
         <AuthContextProvider>
           <QueryClientProvider client={queryClient}>
-            <Box bg={'gray.800'} flex={1} testID="root-view">
+            <Box bg={'gray.700'} flex={1} testID="root-view">
               <Routes />
             </Box>
           </QueryClientProvider>
